@@ -139,8 +139,11 @@ public class PacketHandles_Method
 		string uuid = packet.ReadstringUNICODE();
 		Vector3 pos = packet.Readvector3();
 		Quaternion rot = packet.Readquaternion();
-		NetworkSystem.instance.FindNetworkObject[uuid].SetMovement(pos, rot);
-		PacketSend.Server_Send_DistributeNOInfo(uuid,pos,rot);
+		NetworkSystem.instance.FindNetworkObject[uuid].transform.position = pos;
+        NetworkSystem.instance.FindNetworkObject[uuid].transform.rotation = rot;
+
+
+        PacketSend.Server_Send_DistributeNOInfo(uuid,pos,rot);
 
 
 	}
