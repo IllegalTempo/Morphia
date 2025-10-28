@@ -155,10 +155,10 @@ public class PacketHandles_Method
 		
 		// TODO: Handle the packet
 		string itemid = packet.ReadstringUNICODE();
-		int whopicked = p.NetworkID;
-			NetworkSystem.instance.FindNetworkObject[itemid].Owner = whopicked;
+		int whopicked = packet.Readint();
+		NetworkSystem.instance.FindNetworkObject[itemid].Owner = whopicked;
 
-		PacketSend.Server_Send_DistributePickUpItem(itemid,p.NetworkID);
+		PacketSend.Server_Send_DistributePickUpItem(itemid,whopicked);
 	}
 
 	public static void Client_Handle_DistributePickUpItem(Connection c, packet packet)

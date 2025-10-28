@@ -71,11 +71,11 @@ public class item : Selectable
         if (NetworkSystem.instance.IsServer)
         {
             netObj.Owner = -1;
-            PacketSend.Server_Send_DistributePickUpItem(netObj.Identifier, netObj.Owner);
+            PacketSend.Server_Send_DistributePickUpItem(netObj.Identifier, -1);
         }
         else
         {
-            PacketSend.Client_Send_PickUpItem(netObj.Identifier, netObj.Owner);
+            PacketSend.Client_Send_PickUpItem(netObj.Identifier, -1);
         }
 
     }
