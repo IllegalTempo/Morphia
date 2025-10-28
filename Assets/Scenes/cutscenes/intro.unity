@@ -232,8 +232,6 @@ GameObject:
   - component: {fileID: 376251115}
   - component: {fileID: 376251119}
   - component: {fileID: 376251118}
-  - component: {fileID: 376251117}
-  - component: {fileID: 376251116}
   - component: {fileID: 376251120}
   m_Layer: 5
   m_Name: FadeScreen
@@ -261,32 +259,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &376251116
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 376251114}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6080850c6f9bf1c40b1597d374ca19eb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FadeScreen
-  startVisible: 0
-  defaultColor: {r: 0, g: 0, b: 0, a: 0}
---- !u!225 &376251117
-CanvasGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 376251114}
-  m_Enabled: 1
-  m_Alpha: 1
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
-  m_IgnoreParentGroups: 0
 --- !u!114 &376251118
 MonoBehaviour:
   m_ObjectHideFlags: 0
