@@ -96,6 +96,8 @@ public class gamecore : MonoBehaviour
 
 
         Debug.Log("Scene Loaded: " + scene.name);
+        LoadingScreen.SetActive(false);
+
         SceneData sd = GameObject.Find("SceneCore").GetComponent<SceneData>();
         if (sd.IsLobby) return;
         LocalPlayer.playerMovement.InGameSetup();
@@ -186,7 +188,6 @@ public class gamecore : MonoBehaviour
             yield return null; // Wait for next frame
         }
 
-        LoadingScreen.SetActive(false);
 
     }
     public void AddMission(string MissionTitle, string MissionDescription)
