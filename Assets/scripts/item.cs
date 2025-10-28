@@ -87,6 +87,10 @@ public class item : Selectable
         itemCollider = GetComponent<Collider>();
         rb = GetComponent<Rigidbody>();
         netObj = GetComponent<NetworkObject>();
+        if(!NetworkSystem.instance.IsServer)
+        {
+            rb.constraints = RigidbodyConstraints.FreezeAll;
+        }
     }
 
     protected override void Update()
@@ -102,20 +106,19 @@ public class item : Selectable
             outline.OutlineWidth = 5f;
 
         }
-        
-            if (LookedAt)
-            {
 
-                outline.enabled = true;
-            
-                LookedAt = false || netObj.Owner != -1;
-            }
-            else
-            {
-                outline.enabled = false;
+        if (LookedAt)
+        {
 
-            }
-        
+            outline.enabled = true;
+
+            LookedAt = false || netObj.Owner != -1;
+        }
+        else
+        {
+            outline.enabled = false;
+
+        }
 
         if (gamecore.instance.IsLocal(netObj.Owner) && Camera.main != null)
         {
