@@ -45,9 +45,10 @@ public class item : Selectable
         {
             itemCollider.enabled = false;
         }
+        netObj.Owner = gamecore.instance.LocalPlayer.NetworkID;
+
         if (NetworkSystem.instance.IsServer)
         {
-            netObj.Owner = gamecore.instance.LocalPlayer.NetworkID;
             PacketSend.Server_Send_DistributePickUpItem(netObj.Identifier, netObj.Owner);
         }
         else
@@ -68,9 +69,10 @@ public class item : Selectable
         this.transform.parent = OriginalParent;
 
         itemCollider.enabled = true;
+        netObj.Owner = -1;
+
         if (NetworkSystem.instance.IsServer)
         {
-            netObj.Owner = -1;
             PacketSend.Server_Send_DistributePickUpItem(netObj.Identifier, -1);
         }
         else
