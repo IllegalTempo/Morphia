@@ -46,7 +46,7 @@ public class gamecore : MonoBehaviour
         MainScreenUI.instance.StatusDisplay.text = p.SteamName + " Has Joined!";
 
         StartGame(save.instance.CurrentSaveName);
-        PacketSend.Server_Send_StartGame("stage_"+save.instance.CurrentStage);
+        PacketSend.Server_Send_StartGame(save.instance.CurrentStage);
 
 
 
