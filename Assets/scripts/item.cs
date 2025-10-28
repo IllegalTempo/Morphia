@@ -32,10 +32,10 @@ public class item : Selectable
             PickUpItem();
         }
     }
-    
+
     private void PickUpItem()
     {
-        
+
         rb.linearVelocity = Vector3.zero;
         gamecore.instance.LocalPlayer.playerMovement.OnPickUpItem(this);
         outline.OutlineColor = Color.aquamarine;
@@ -45,19 +45,20 @@ public class item : Selectable
         {
             itemCollider.enabled = false;
         }
-        if(NetworkSystem.instance.IsServer)
+        if (NetworkSystem.instance.IsServer)
         {
             netObj.Owner = gamecore.instance.LocalPlayer.NetworkID;
             PacketSend.Server_Send_DistributePickUpItem(netObj.Identifier, netObj.Owner);
-        } else
+        }
+        else
         {
             PacketSend.Client_Send_PickUpItem(netObj.Identifier, netObj.Owner);
         }
-        
+
     }
     public void Drop(Vector3 dropPosition)
     {
-        
+
 
         // Remove from inventory
         gamecore.instance.LocalPlayer.playerMovement.OnDropItem(this);
@@ -81,13 +82,13 @@ public class item : Selectable
 
     private void Start()
     {
-        if (ItemID == -1) {Destroy(this.gameObject); Debug.LogError($"Destroyed {gameObject.name}"); }
+        if (ItemID == -1) { Destroy(this.gameObject); Debug.LogError($"Destroyed {gameObject.name}"); }
         OriginalParent = this.transform.parent;
         itemCollider = GetComponent<Collider>();
         rb = GetComponent<Rigidbody>();
         netObj = GetComponent<NetworkObject>();
     }
-    
+
     protected override void Update()
     {
         if (ClickTimer > 0)
@@ -101,26 +102,26 @@ public class item : Selectable
             outline.OutlineWidth = 5f;
 
         }
-        if (netObj.Owner == -1)
-        {
+        
             if (LookedAt)
             {
 
                 outline.enabled = true;
-                LookedAt = false;
+            
+                LookedAt = false || netObj.Owner != -1;
             }
             else
             {
                 outline.enabled = false;
 
             }
-        }
         
+
         if (gamecore.instance.IsLocal(netObj.Owner) && Camera.main != null)
         {
             // Update position to follow camera
             transform.position = Camera.main.transform.position + Camera.main.transform.rotation * inventoryOffset;
-            
+
             // Optionally update rotation to follow camera
             if (followCameraRotation)
             {
@@ -129,5 +130,5 @@ public class item : Selectable
         }
     }
 
-    
+
 }
