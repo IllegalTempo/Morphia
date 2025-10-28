@@ -140,10 +140,10 @@ public class PacketHandles_Method
 		Vector3 pos = packet.Readvector3();
 		Quaternion rot = packet.Readquaternion();
 		NetworkSystem.instance.FindNetworkObject[uuid].transform.position = pos;
-        NetworkSystem.instance.FindNetworkObject[uuid].transform.rotation = rot;
+		NetworkSystem.instance.FindNetworkObject[uuid].transform.rotation = rot;
 
 
-        PacketSend.Server_Send_DistributeNOInfo(uuid,pos,rot);
+		PacketSend.Server_Send_DistributeNOInfo(uuid,pos,rot);
 
 
 	}

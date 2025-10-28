@@ -21,7 +21,6 @@ public class gamecore : MonoBehaviour
     public Slider LoadingProgress;
     public TMP_Text LoadingText;
 
-    public List<item> Inventory = new List<item>();
     public NetworkPlayerObject LocalPlayer;
     public bool InLobby = true;
     public float groundCheckDistance = 0.1f; // Distance to check for ground

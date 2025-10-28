@@ -19,7 +19,7 @@ public class item : Selectable
     {
         base.OnClicked();
         // Check if item is already in inventory
-        if (gamecore.instance.Inventory.Contains(this))
+        if (netObj.Owner != -1)
         {
             if (!gamecore.instance.IsLocal(netObj.Owner)) return;
 
@@ -28,7 +28,6 @@ public class item : Selectable
         }
         else
         {
-            if (netObj.Owner != -1) return;
             // Item is not in inventory, so pick it up
             PickUpItem();
         }
@@ -91,11 +90,32 @@ public class item : Selectable
     
     protected override void Update()
     {
-        if (netObj.Owner == -1)
+        if (ClickTimer > 0)
         {
-            base.Update();
+            ClickTimer -= Time.deltaTime;
+            outline.OutlineWidth = 10f;
+        }
+        else
+        {
+            ClickTimer = 0f;
+            outline.OutlineWidth = 5f;
 
         }
+        if (netObj.Owner == -1)
+        {
+            if (LookedAt)
+            {
+
+                outline.enabled = true;
+                LookedAt = false;
+            }
+            else
+            {
+                outline.enabled = false;
+
+            }
+        }
+        
         if (gamecore.instance.IsLocal(netObj.Owner) && Camera.main != null)
         {
             // Update position to follow camera

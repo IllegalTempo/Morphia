@@ -1,4 +1,5 @@
 using Steamworks.Data;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -47,17 +48,19 @@ public class PlayerMovement : MonoBehaviour
     // Wall collision prevention
     public float wallCheckDistance = 0.5f; // Distance to check for walls
     public LayerMask wallLayer = -1; // Layer mask for walls (default: everything)
-    
-    
+
+
+    public List<item> Inventory = new List<item>();
+
     public void OnPickUpItem(item Item)
     {
-        gamecore.instance.Inventory.Add(Item);
+        Inventory.Add(Item);
         SetCharacterScreenOffset(PickingUpOffset);
     }
     
     public void OnDropItem(item Item)
     {
-        gamecore.instance.Inventory.Remove(Item);
+        Inventory.Remove(Item);
         SetCharacterScreenOffset(Vector2.zero);
     }
     public void InGameSetup()
