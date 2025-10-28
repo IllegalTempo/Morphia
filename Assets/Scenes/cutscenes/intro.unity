@@ -1100,7 +1100,7 @@ GameObject:
   - component: {fileID: 1966378774}
   - component: {fileID: 1966378773}
   m_Layer: 0
-  m_Name: scenecore
+  m_Name: SceneCore
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
