@@ -11,7 +11,7 @@ public class save
     public SaveInfo_Player[] playerSaveInfos = new SaveInfo_Player[2];
     public List<ItemDataEntry> ItemData = new List<ItemDataEntry>();
     public Dictionary<ItemIdentifier,SaveInfo_Item> FindSavedItem = new Dictionary<ItemIdentifier, SaveInfo_Item>();
-    public int CurrentStage = 1;
+    public string CurrentStage = "intro";
     public string CurrentSaveName = "";
     public static save instance = new save();
 
@@ -80,7 +80,7 @@ public class save
             new SaveInfo_Player(new Vector3(340,10,747), Quaternion.identity)
         };
         ItemData = new List<ItemDataEntry>();
-        CurrentStage = 1;
+        CurrentStage = "intro";
         SaveToFile(GetSavePath(saveName));
     }
     /// <summary>
@@ -162,25 +162,25 @@ public class ItemDataEntry
 
 public class ItemIdentifier
 {
-    public int stageNumber;
+    public string stage;
     public int ItemID;
-    public ItemIdentifier(int stageNumber, int itemID)
+    public ItemIdentifier(string stage, int itemID)
     {
-        this.stageNumber = stageNumber;
+        this.stage = stage;
         ItemID = itemID;
     }
     public override bool Equals(object obj)
     {
         if (obj is ItemIdentifier other)
         {
-            return stageNumber == other.stageNumber && ItemID == other.ItemID;
+            return stage == other.stage && ItemID == other.ItemID;
         }
         return false;
     }
 
     public override int GetHashCode()
     {
-        return (stageNumber, ItemID).GetHashCode();
+        return (stage, ItemID).GetHashCode();
     }
 }
 [Serializable]

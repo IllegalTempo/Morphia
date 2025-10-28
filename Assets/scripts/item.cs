@@ -1,6 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(NetworkObject))]
+
 public class item : Selectable
 {
     public string ItemName;

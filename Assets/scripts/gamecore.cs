@@ -94,11 +94,13 @@ public class gamecore : MonoBehaviour
     public void OnSceneLoad(UnityEngine.SceneManagement.Scene scene, LoadSceneMode mode)
     {
 
-        if (scene.name == "mainscreen") return;
 
         Debug.Log("Scene Loaded: " + scene.name);
         SceneData sd = GameObject.Find("SceneCore").GetComponent<SceneData>();
-        if(NetworkSystem.instance.IsServer)
+        if (sd.IsLobby) return;
+        LocalPlayer.playerMovement.InGameSetup();
+
+        if (NetworkSystem.instance.IsServer)
         {
             foreach(KeyValuePair<ulong,NetworkPlayer> player in NetworkSystem.instance.server.players)
             {
@@ -141,7 +143,7 @@ public class gamecore : MonoBehaviour
     public IEnumerator UseSave(string savename) //Use it when all players is in lobby!
     {
         save.instance.LoadFromFile(save.instance.GetSavePath(savename));
-        yield return StartCoroutine(LoadScene("stage_" + save.instance.CurrentStage));
+        yield return StartCoroutine(LoadScene(save.instance.CurrentStage));
 
         foreach (NetworkPlayerObject p in NetworkSystem.instance.PlayerList)
         {
@@ -183,7 +185,6 @@ public class gamecore : MonoBehaviour
 
             yield return null; // Wait for next frame
         }
-        LocalPlayer.playerMovement.InGameSetup();
 
         LoadingScreen.SetActive(false);
 
