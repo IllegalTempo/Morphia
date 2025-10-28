@@ -108,7 +108,7 @@ public class item : Selectable
             outline.OutlineWidth = 5f;
 
         }
-
+        
         if (LookedAt)
         {
 
@@ -121,7 +121,13 @@ public class item : Selectable
             outline.enabled = false;
 
         }
-
+        if(netObj.Owner == -1)
+        {
+            rb.constraints = RigidbodyConstraints.FreezeRotation;
+        } else
+        {
+            rb.constraints = RigidbodyConstraints.FreezeAll;
+        }
         if (gamecore.instance.IsLocal(netObj.Owner) && Camera.main != null)
         {
             // Update position to follow camera
