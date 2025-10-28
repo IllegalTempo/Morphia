@@ -39,7 +39,7 @@ public class item : Selectable
         rb.linearVelocity = Vector3.zero;
         gamecore.instance.LocalPlayer.playerMovement.OnPickUpItem(this);
         outline.OutlineColor = Color.aquamarine;
-
+        LookedAt = true;
         // Get collider in itself or children and disable it
         if (itemCollider != null)
         {
