@@ -963,6 +963,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SceneData
   stage: main
   items: []
+  npcs: []
   Spawnpoint:
   - {fileID: 1286441092}
   - {fileID: 2124623430}
@@ -4208,8 +4209,8 @@ MonoBehaviour:
   LoadingScreen: {fileID: 469821418}
   LoadingProgress: {fileID: 507992939}
   LoadingText: {fileID: 327533731}
-  DialogueUI: {fileID: 0}
-  DialogueText: {fileID: 0}
+  DialogueUI: {fileID: 432286516}
+  DialogueText: {fileID: 2055439629}
   LocalPlayer: {fileID: 0}
   InLobby: 1
   InDialogue: 0
@@ -4222,6 +4223,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   SelectedSaveName: 
+  CurrentPlayingConversation: []
 --- !u!114 &1361824423
 MonoBehaviour:
   m_ObjectHideFlags: 0
