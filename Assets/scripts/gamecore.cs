@@ -33,10 +33,15 @@ public class gamecore : MonoBehaviour
     private bool SaveLoaded = false;
     public string SelectedSaveName = "";
     public Dictionary<string, conversation> GetConversation = new Dictionary<string, conversation>();
+    public List<dialogue> CurrentPlayingConversation;
 
     public bool IsLocal(int id)
     {
         return LocalPlayer != null && LocalPlayer.NetworkID == id;
+    }
+    private void Update()
+    {
+
     }
     public void StartGame(string savename)
     {
@@ -46,43 +51,45 @@ public class gamecore : MonoBehaviour
         //Wait 5 seconds 
         StartCoroutine(WaitAndStartGame(savename));
     }
-    public void PlayDialogue(dialogue dialogue)
+    public void PlayNextDialogue()
     {
+        dialogue dialogue = CurrentPlayingConversation[0];
         // Find the character GameObject by name
         GameObject character = GameObject.Find(dialogue.CharacterName);
-        
+
         if (character == null)
         {
             Debug.LogError($"Character '{dialogue.CharacterName}' not found in scene!");
             return;
         }
-        
+
         // Set dialogue state
         InDialogue = true;
 
         // Show dialogue UI
         DialogueUI.SetActive(true);
-        
+
         // Set dialogue text
         DialogueText.text = dialogue.DialogueText;
-        
+
         // Make camera follow the character
         if (LocalPlayer != null && LocalPlayer.playerMovement != null && LocalPlayer.playerMovement.playerCamera != null)
         {
             // Calculate direction from player to character
             Vector3 directionToCharacter = (character.transform.position - LocalPlayer.transform.position).normalized;
-            
+
             // Calculate desired camera rotation to look at character
             directionToCharacter.y = 0; // Keep on horizontal plane
-            
+
             if (directionToCharacter != Vector3.zero)
             {
                 Quaternion targetRotation = Quaternion.LookRotation(directionToCharacter);
-                
+
                 // Apply rotation to camera (you may want to smooth this with a coroutine)
                 LocalPlayer.playerMovement.playerCamera.transform.rotation = targetRotation;
             }
-    }
+        }
+        CurrentPlayingConversation.RemoveAt(0);
     }
     private void LoadConversation()
     {
@@ -90,7 +97,7 @@ public class gamecore : MonoBehaviour
         {
             // Path to the conversation JSON file (adjust as needed)
             string conversationPath = Application.streamingAssetsPath + "/conversations.json";
-            
+
             if (!System.IO.File.Exists(conversationPath))
             {
                 Debug.LogWarning("Conversation file not found at: " + conversationPath);
@@ -99,19 +106,19 @@ public class gamecore : MonoBehaviour
 
             // Read JSON file
             string json = System.IO.File.ReadAllText(conversationPath);
-            
+
             // Deserialize JSON to conversation collection
             ConversationCollection collection = JsonUtility.FromJson<ConversationCollection>(json);
-            
+
             // Clear existing conversations
             GetConversation.Clear();
-            
+
             // Populate dictionary with conversations
             foreach (conversation conv in collection.conversations)
             {
                 GetConversation[conv.conversationKey] = conv;
             }
-            
+
             Debug.Log($"Loaded {GetConversation.Count} conversations successfully");
         }
         catch (System.Exception e)
@@ -175,6 +182,44 @@ public class gamecore : MonoBehaviour
     {
 
     }
+    private void SetUpScene(SceneData sd)
+    {
+        if (SaveLoaded) //If save is Loaded, set player position
+        {
+            CurrentStage = sd;
+            if (LocalPlayer != null)
+            {
+                LocalPlayer.transform.position = sd.Spawnpoint[LocalPlayer.NetworkID % sd.Spawnpoint.Length].position;
+            }
+            else
+            {
+                Debug.LogError("LocalPlayer is null on scene load!");
+            }
+        }
+        foreach (item item in sd.items)
+        {
+            ItemIdentifier identifier = new ItemIdentifier(sd.stage, item.ItemID);
+            if (save.instance.FindSavedItem.ContainsKey(identifier))
+            {
+                SaveInfo_Item savedItem = save.instance.FindSavedItem[identifier];
+                item.transform.position = savedItem.position;
+                item.transform.rotation = savedItem.rotation;
+                item.netObj.Owner = savedItem.Parented_To_Player;
+
+
+            }
+        }
+        foreach (npc npc in sd.npcs)
+        {
+            if (save.instance.FindNPC.ContainsKey(npc.NpcName))
+            {
+                npc savednpc = save.instance.FindNPC[npc.NpcName];
+                npc.Conversations = savednpc.Conversations;
+
+            }
+        }
+        SaveLoaded = true;
+    }
     public void OnSceneLoad(UnityEngine.SceneManagement.Scene scene, LoadSceneMode mode)
     {
 
@@ -188,37 +233,16 @@ public class gamecore : MonoBehaviour
 
         if (NetworkSystem.instance.IsServer)
         {
-            foreach(KeyValuePair<ulong,NetworkPlayer> player in NetworkSystem.instance.server.players)
+            foreach (KeyValuePair<ulong, NetworkPlayer> player in NetworkSystem.instance.server.players)
             {
                 int NetworkID = player.Value.NetworkID;
                 PacketSend.Server_Send_DistributeInitialPos(player.Value, sd.Spawnpoint[NetworkID % sd.Spawnpoint.Length].position, sd.Spawnpoint[NetworkID % sd.Spawnpoint.Length].rotation);
             }
         }
-        if (SaveLoaded)
-        {
-            CurrentStage = sd;
-            if (LocalPlayer != null)
-            {
-                LocalPlayer.transform.position = sd.Spawnpoint[LocalPlayer.NetworkID%sd.Spawnpoint.Length].position;
-            } else
-            {
-                Debug.LogError("LocalPlayer is null on scene load!");
-            }
-        }
-        foreach(item item in sd.items)
-        {
-            ItemIdentifier identifier = new ItemIdentifier(sd.stage, item.ItemID);
-            if (save.instance.FindSavedItem.ContainsKey(identifier))
-            {
-                SaveInfo_Item savedItem = save.instance.FindSavedItem[identifier];
-                item.transform.position = savedItem.position;
-                item.transform.rotation = savedItem.rotation;
-                item.netObj.Owner = savedItem.Parented_To_Player;
+
+        SetUpScene(sd);
 
 
-            }
-        }
-        
 
     }
     public IEnumerator Client_UseSave(string scenename)
@@ -257,6 +281,7 @@ public class gamecore : MonoBehaviour
     public IEnumerator LoadScene(string scenename)
     {
         StartLoading("Loading Scene: " + scenename);
+        ToSave();
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(scenename);
 
         // Optional: prevent scene from activating immediately
@@ -280,4 +305,63 @@ public class gamecore : MonoBehaviour
 
 
     }
+    public void ToSave()
+    {
+        if (CurrentStage == null)
+        {
+            Debug.LogWarning("Cannot save: CurrentStage is null");
+            return;
+        }
+
+        // Update current stage name
+        save.instance.CurrentStage = CurrentStage.stage;
+
+        // Save player positions and rotations
+        foreach (NetworkPlayerObject player in NetworkSystem.instance.PlayerList)
+        {
+            if (player.NetworkID < save.instance.playerSaveInfos.Length)
+            {
+                save.instance.playerSaveInfos[player.NetworkID] = new SaveInfo_Player(
+                    player.transform.position,
+                    player.transform.rotation
+                );
+            }
+            else
+            {
+                Debug.LogError($"Network ID {player.NetworkID} exceeds playerSaveInfos array length");
+            }
+        }
+
+
+        // Save all items in the current stage
+        foreach (item item in CurrentStage.items)
+        {
+            ItemIdentifier identifier = new ItemIdentifier(CurrentStage.stage, item.ItemID);
+            SaveInfo_Item savedItem = new SaveInfo_Item(
+                item.transform.position,
+                item.transform.rotation,
+                item.netObj.Owner
+            );
+
+            // Add to both the list (for serialization) and dictionary (for quick lookup)
+            ItemDataEntry entry = new ItemDataEntry
+            {
+                identifier = identifier,
+                itemInfo = savedItem
+            };
+            save.instance.FindSavedItem[identifier] = savedItem;
+        }
+
+
+        // Save all NPCs in the current stage
+        foreach (npc npc in CurrentStage.npcs)
+        {
+            save.instance.FindNPC[npc.NpcName] = npc;
+        }
+        save.instance.ParseDict();
+        save.instance.SaveToFile(save.instance.GetSavePath(save.instance.CurrentSaveName));
+
+        Debug.Log($"Game state parsed to save object. Stage: {CurrentStage.stage}, Players: {NetworkSystem.instance.PlayerList.Count}, Items: {save.instance.ItemData.Count}, NPCs: {save.instance.npcs.Count}");
+    }
+
 }

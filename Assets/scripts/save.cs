@@ -10,7 +10,9 @@ public class save
 {
     public SaveInfo_Player[] playerSaveInfos = new SaveInfo_Player[2];
     public List<ItemDataEntry> ItemData = new List<ItemDataEntry>();
+    public List<npc> npcs = new List<npc>();
     public Dictionary<ItemIdentifier,SaveInfo_Item> FindSavedItem = new Dictionary<ItemIdentifier, SaveInfo_Item>();
+    public Dictionary<string,npc> FindNPC = new Dictionary<string, npc>();
     public string CurrentStage = "intro";
     public string CurrentSaveName = "";
     public static save instance = new save();
@@ -83,6 +85,32 @@ public class save
         CurrentStage = "intro";
         SaveToFile(GetSavePath(saveName));
     }
+    public void ParseDict()
+    {
+        ItemData = new List<ItemDataEntry>();
+        foreach(var pair in FindSavedItem)
+        {
+            ItemDataEntry entry = new ItemDataEntry
+            {
+                identifier = pair.Key,
+                itemInfo = pair.Value
+            };
+            ItemData.Add(entry);
+        }
+        npcs = new List<npc>(FindNPC.Values);
+
+    }
+    private void ParseList()
+    {
+        foreach (ItemDataEntry item in ItemData)
+        {
+            FindSavedItem[item.identifier] = item.itemInfo;
+        }
+        foreach (npc npc in npcs)
+        {
+            FindNPC[npc.NpcName] = npc;
+        }
+    }
     /// <summary>
     /// Loads the game state from a JSON file
     /// </summary>
@@ -104,12 +132,8 @@ public class save
             
             // Deserialize from JSON (overwrites current instance data)
             JsonUtility.FromJsonOverwrite(json, this);
+            ParseList();
             
-            //Convert 
-            foreach(ItemDataEntry item in ItemData)
-            {
-                FindSavedItem[item.identifier] = item.itemInfo;
-            }
             Debug.Log("Game loaded successfully from: " + path);
             return true;
         }

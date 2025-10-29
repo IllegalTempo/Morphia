@@ -4,7 +4,7 @@ using UnityEngine;
 public class npc :Selectable
 {
     public string NpcName;
-    public List<string> Conversations = new List<string>();
+    public List<conversation> Conversations = new List<conversation>();
     public override void OnClicked()
     {
         base.OnClicked();
