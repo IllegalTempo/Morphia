@@ -46,7 +46,8 @@ public class gamecore : MonoBehaviour
     public void StartGame(string savename)
     {
         MainScreenUI.instance.animator.Play("mainmenu_prestart");
-        MainScreenUI.instance.StatusDisplay.text = savename + " - Starting in 5 seconds...";
+        MainScreenUI.instance.StatusDisplay.text ="Starting in 5 seconds...";
+        Debug.Log("StartGame " + savename);
 
         //Wait 5 seconds 
         StartCoroutine(WaitAndStartGame(savename));
@@ -129,8 +130,8 @@ public class gamecore : MonoBehaviour
     public void Server_OnSecondPlayerJoined(NetworkPlayer p)
     {
         MainScreenUI.instance.StatusDisplay.text = p.SteamName + " Has Joined!";
-
-        StartGame(save.instance.CurrentSaveName);
+        Debug.Log("Second Player Joined: " + p.SteamName + SelectedSaveName);
+        StartGame(SelectedSaveName);
         PacketSend.Server_Send_StartGame(save.instance.CurrentStage);
 
 
@@ -139,6 +140,7 @@ public class gamecore : MonoBehaviour
     private IEnumerator WaitAndStartGame(string savename)
     {
         yield return new WaitForSeconds(5f);
+        print("Wait and Startgame: " + savename);
         if (!NetworkSystem.instance.IsServer)
         {
             StartCoroutine(Client_UseSave(savename));
@@ -261,6 +263,8 @@ public class gamecore : MonoBehaviour
     }
     public IEnumerator UseSave(string savename) //Use it when all players is in lobby!
     {
+        Debug.Log("Server using save " + savename);
+        Debug.Log("Server using save " + save.instance.GetSavePath(savename));
         save.instance.LoadFromFile(save.instance.GetSavePath(savename));
         yield return StartCoroutine(LoadScene(save.instance.CurrentStage));
 
