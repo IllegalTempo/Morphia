@@ -209,15 +209,24 @@ public class gamecore : MonoBehaviour
 
             }
         }
-        foreach (npc npc in sd.npcs)
+        //if sdnpcs null
+        if(sd.npcs == null)
         {
-            if (save.instance.FindNPC.ContainsKey(npc.NpcName))
+            Debug.LogWarning("SceneData NPCs is null!");
+            return;
+        } else
+        {
+            foreach (npc npc in sd.npcs)
             {
-                npc savednpc = save.instance.FindNPC[npc.NpcName];
-                npc.Conversations = savednpc.Conversations;
+                if (save.instance.FindNPC.ContainsKey(npc.NpcName))
+                {
+                    npc savednpc = save.instance.FindNPC[npc.NpcName];
+                    npc.Conversations = savednpc.Conversations;
 
+                }
             }
         }
+            
         SaveLoaded = true;
     }
     public void OnSceneLoad(UnityEngine.SceneManagement.Scene scene, LoadSceneMode mode)
