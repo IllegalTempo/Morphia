@@ -78,8 +78,8 @@ public class save
         CurrentSaveName = saveName;
         playerSaveInfos = new SaveInfo_Player[2]
         {
-            new SaveInfo_Player(new Vector3(0,10,0), Quaternion.identity),
-            new SaveInfo_Player(new Vector3(0,10,0), Quaternion.identity)
+            new SaveInfo_Player(new Vector3(0,100,0), Quaternion.identity),
+            new SaveInfo_Player(new Vector3(0,100,0), Quaternion.identity)
         };
         ItemData = new List<ItemDataEntry>();
         CurrentStage = "intro";

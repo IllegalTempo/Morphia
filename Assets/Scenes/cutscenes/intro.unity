@@ -1310,6 +1310,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SceneData
   stage: intro
   items: []
+  npcs: []
   Spawnpoint:
   - {fileID: 1189739492}
   - {fileID: 1380282553}
