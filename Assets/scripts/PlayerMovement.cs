@@ -51,6 +51,8 @@ public class PlayerMovement : MonoBehaviour
 
 
     public List<item> Inventory = new List<item>();
+    public MeshRenderer BodyRenderer;
+    public Material[] BodyMaterial;
 
     public void OnPickUpItem(item Item)
     {
@@ -62,6 +64,15 @@ public class PlayerMovement : MonoBehaviour
     {
         Inventory.Remove(Item);
         SetCharacterScreenOffset(Vector2.zero);
+    }
+    public void OnInitialized(int NetID)
+    {
+        if (BodyRenderer != null && NetID < BodyMaterial.Length)
+        {
+            BodyRenderer.material = BodyMaterial[NetID];
+        }
+
+
     }
     public void InGameSetup()
     {
@@ -90,7 +101,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        if (!gamecore.instance.InLobby && NetworkplayerOBJ.IsLocal)
+        if (!gamecore.instance.InLobby && NetworkplayerOBJ.IsLocal && !gamecore.instance.InDialogue)
         {
             HandleCameraRotation();
             HandleJumpAndSneak();

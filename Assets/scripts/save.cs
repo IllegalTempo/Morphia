@@ -76,8 +76,8 @@ public class save
         CurrentSaveName = saveName;
         playerSaveInfos = new SaveInfo_Player[2]
         {
-            new SaveInfo_Player(new Vector3(360,10,747), Quaternion.identity),
-            new SaveInfo_Player(new Vector3(340,10,747), Quaternion.identity)
+            new SaveInfo_Player(new Vector3(0,10,0), Quaternion.identity),
+            new SaveInfo_Player(new Vector3(0,10,0), Quaternion.identity)
         };
         ItemData = new List<ItemDataEntry>();
         CurrentStage = "intro";
@@ -96,7 +96,6 @@ public class save
             if (!File.Exists(path))
             {
                 Debug.LogWarning("Save file not found at: " + path);
-                NewSave(CurrentSaveName);
                 return false;
             }
 

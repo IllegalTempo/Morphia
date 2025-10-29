@@ -76,9 +76,11 @@ public class NetworkSystem : MonoBehaviour
             return null;
         }
         p.NetworkID = networkid;
+        p.gameObject.GetComponent<PlayerMovement>().OnInitialized(networkid);
         p.steamID = steamid;
         p.IsLocal = isLocal;
         p.gameObject.name = "Player_" + networkid;
+
         if (p.IsLocal)
         {
             gamecore.instance.LocalPlayer = p;

@@ -1,5 +1,3 @@
-
-
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -20,15 +18,22 @@ public class gamecore : MonoBehaviour
     public GameObject LoadingScreen;
     public Slider LoadingProgress;
     public TMP_Text LoadingText;
+    [Header("UI/Dialogue")]
+    public GameObject DialogueUI;
+    public TMP_Text DialogueText;
+
 
     public NetworkPlayerObject LocalPlayer;
     public bool InLobby = true;
+    public bool InDialogue = false;
     public float groundCheckDistance = 0.1f; // Distance to check for ground
     public SceneData CurrentStage;
     public LayerMask Interactable;
     public LayerMask groundLayer; // Set this in Inspector to only check ground objects
     private bool SaveLoaded = false;
     public string SelectedSaveName = "";
+    public Dictionary<string, conversation> GetConversation = new Dictionary<string, conversation>();
+
     public bool IsLocal(int id)
     {
         return LocalPlayer != null && LocalPlayer.NetworkID == id;
@@ -40,6 +45,79 @@ public class gamecore : MonoBehaviour
 
         //Wait 5 seconds 
         StartCoroutine(WaitAndStartGame(savename));
+    }
+    public void PlayDialogue(dialogue dialogue)
+    {
+        // Find the character GameObject by name
+        GameObject character = GameObject.Find(dialogue.CharacterName);
+        
+        if (character == null)
+        {
+            Debug.LogError($"Character '{dialogue.CharacterName}' not found in scene!");
+            return;
+        }
+        
+        // Set dialogue state
+        InDialogue = true;
+
+        // Show dialogue UI
+        DialogueUI.SetActive(true);
+        
+        // Set dialogue text
+        DialogueText.text = dialogue.DialogueText;
+        
+        // Make camera follow the character
+        if (LocalPlayer != null && LocalPlayer.playerMovement != null && LocalPlayer.playerMovement.playerCamera != null)
+        {
+            // Calculate direction from player to character
+            Vector3 directionToCharacter = (character.transform.position - LocalPlayer.transform.position).normalized;
+            
+            // Calculate desired camera rotation to look at character
+            directionToCharacter.y = 0; // Keep on horizontal plane
+            
+            if (directionToCharacter != Vector3.zero)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(directionToCharacter);
+                
+                // Apply rotation to camera (you may want to smooth this with a coroutine)
+                LocalPlayer.playerMovement.playerCamera.transform.rotation = targetRotation;
+            }
+    }
+    }
+    private void LoadConversation()
+    {
+        try
+        {
+            // Path to the conversation JSON file (adjust as needed)
+            string conversationPath = Application.streamingAssetsPath + "/conversations.json";
+            
+            if (!System.IO.File.Exists(conversationPath))
+            {
+                Debug.LogWarning("Conversation file not found at: " + conversationPath);
+                return;
+            }
+
+            // Read JSON file
+            string json = System.IO.File.ReadAllText(conversationPath);
+            
+            // Deserialize JSON to conversation collection
+            ConversationCollection collection = JsonUtility.FromJson<ConversationCollection>(json);
+            
+            // Clear existing conversations
+            GetConversation.Clear();
+            
+            // Populate dictionary with conversations
+            foreach (conversation conv in collection.conversations)
+            {
+                GetConversation[conv.conversationKey] = conv;
+            }
+            
+            Debug.Log($"Loaded {GetConversation.Count} conversations successfully");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError("Failed to load conversations: " + e.Message);
+        }
     }
     public void Server_OnSecondPlayerJoined(NetworkPlayer p)
     {
@@ -86,10 +164,16 @@ public class gamecore : MonoBehaviour
     private void Start()
     {
         LoadingScreen.SetActive(false);
+        DialogueUI.SetActive(false);
+        LoadConversation();
     }
     private void OnDestroy()
     {
         SceneManager.sceneLoaded -= OnSceneLoad;
+    }
+    public void StartDialogue(string DialogueKey)
+    {
+
     }
     public void OnSceneLoad(UnityEngine.SceneManagement.Scene scene, LoadSceneMode mode)
     {
