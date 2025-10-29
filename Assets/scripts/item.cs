@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(NetworkObject))]
 
@@ -98,8 +99,34 @@ public class item : Selectable
 
     protected override void Update()
     {
-        base.Update();
-        if (netObj.Owner == -1)
+        if (ClickTimer > 0)
+        {
+            ClickTimer -= Time.deltaTime;
+            outline.OutlineWidth = 10f;
+        }
+        else
+        {
+            ClickTimer = 0f;
+            outline.OutlineWidth = 5f;
+
+        }
+        
+        if (LookedAt)
+        {
+
+            outline.enabled = true;
+            if (Mouse.current.leftButton.wasPressedThisFrame)
+            {
+                OnClicked();
+            }
+            LookedAt = false || netObj.Owner != -1;
+        }
+        else
+        {
+            outline.enabled = false;
+
+        }
+        if(netObj.Owner == -1)
         {
             rb.constraints = RigidbodyConstraints.FreezeRotation;
         } else
