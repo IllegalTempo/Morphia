@@ -86,7 +86,7 @@ public class MainScreenUI : MonoBehaviour
         }
         if(save.instance.GetFilesInSaveFolder().Length > 0)
         {
-            gamecore.instance.SelectedSaveName = save.instance.GetFilesInSaveFolder()[0];
+            gamecore.instance.SelectedSaveName = save.instance.GetSaveName(save.instance.GetFilesInSaveFolder()[0]);
 
         }
 

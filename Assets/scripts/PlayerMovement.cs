@@ -49,14 +49,6 @@ public class PlayerMovement : MonoBehaviour
     public float wallCheckDistance = 0.5f; // Distance to check for walls
     public LayerMask wallLayer = -1; // Layer mask for walls (default: everything)
 
-    // Input Actions
-    private InputAction moveAction;
-    private InputAction lookAction;
-    private InputAction jumpAction;
-    private InputAction sneakAction;
-    
-    // Movement input value
-    private Vector2 moveInput = Vector2.zero;
 
     public List<item> Inventory = new List<item>();
     public MeshRenderer BodyRenderer;
@@ -73,15 +65,15 @@ public class PlayerMovement : MonoBehaviour
         Inventory.Remove(Item);
         SetCharacterScreenOffset(Vector2.zero);
     }
-    
     public void OnInitialized(int NetID)
     {
         if (BodyRenderer != null && NetID < BodyMaterial.Length)
         {
             BodyRenderer.material = BodyMaterial[NetID];
         }
+
+
     }
-    
     public void InGameSetup()
     {
         gamecore.instance.InLobby = false;
@@ -93,11 +85,7 @@ public class PlayerMovement : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         rb.constraints = RigidbodyConstraints.FreezeRotation;
-        
-        // Enable input actions
-        EnableInputActions();
     }
-    
     void Start()
     {
         DontDestroyOnLoad(this.gameObject);
@@ -106,112 +94,9 @@ public class PlayerMovement : MonoBehaviour
         NetworkplayerOBJ = GetComponent<NetworkPlayerObject>();
         rb.constraints = RigidbodyConstraints.FreezeAll;
         
-        // Initialize input actions
-        InitializeInputActions();
-    }
-    
-    void InitializeInputActions()
-    {
-        // Create input actions
-        moveAction = new InputAction("Move", binding: "<Gamepad>/leftStick");
-        moveAction.AddCompositeBinding("2DVector")
-            .With("Up", "<Keyboard>/w")
-            .With("Down", "<Keyboard>/s")
-            .With("Left", "<Keyboard>/a")
-            .With("Right", "<Keyboard>/d");
         
-        lookAction = new InputAction("Look", binding: "<Mouse>/delta");
+        // Lock cursor to center of screen
         
-        jumpAction = new InputAction("Jump", binding: "<Keyboard>/space");
-        jumpAction.AddBinding("<Gamepad>/buttonSouth");
-        
-        sneakAction = new InputAction("Sneak", binding: "<Keyboard>/leftShift");
-        sneakAction.AddBinding("<Gamepad>/leftTrigger");
-        
-        // Subscribe to input events
-        moveAction.performed += OnMove;
-        moveAction.canceled += OnMove;
-        
-        jumpAction.performed += OnJump;
-        
-        sneakAction.performed += OnSneakPressed;
-        sneakAction.canceled += OnSneakReleased;
-    }
-    
-    void EnableInputActions()
-    {
-        moveAction?.Enable();
-        lookAction?.Enable();
-        jumpAction?.Enable();
-        sneakAction?.Enable();
-    }
-    
-    void DisableInputActions()
-    {
-        moveAction?.Disable();
-        lookAction?.Disable();
-        jumpAction?.Disable();
-        sneakAction?.Disable();
-    }
-    
-    void OnDestroy()
-    {
-        // Unsubscribe from events
-        if (moveAction != null)
-        {
-            moveAction.performed -= OnMove;
-            moveAction.canceled -= OnMove;
-            moveAction.Dispose();
-        }
-        
-        if (jumpAction != null)
-        {
-            jumpAction.performed -= OnJump;
-            jumpAction.Dispose();
-        }
-        
-        if (sneakAction != null)
-        {
-            sneakAction.performed -= OnSneakPressed;
-            sneakAction.canceled -= OnSneakReleased;
-            sneakAction.Dispose();
-        }
-        
-        lookAction?.Dispose();
-    }
-    
-    // Input callbacks
-    private void OnMove(InputAction.CallbackContext context)
-    {
-        moveInput = context.ReadValue<Vector2>();
-    }
-    
-    private void OnJump(InputAction.CallbackContext context)
-    {
-        if (!gamecore.instance.InLobby && NetworkplayerOBJ.IsLocal && !gamecore.instance.InDialogue)
-        {
-            if (isGrounded)
-            {
-                PreJump();
-            }
-            else if (!hasUsedAirAction)
-            {
-                PreDoubleJump();
-            }
-        }
-    }
-    
-    private void OnSneakPressed(InputAction.CallbackContext context)
-    {
-        if (!gamecore.instance.InLobby && NetworkplayerOBJ.IsLocal && !gamecore.instance.InDialogue)
-        {
-            isSneaking = true;
-        }
-    }
-    
-    private void OnSneakReleased(InputAction.CallbackContext context)
-    {
-        isSneaking = false;
     }
 
     void Update()
@@ -219,6 +104,7 @@ public class PlayerMovement : MonoBehaviour
         if (!gamecore.instance.InLobby && NetworkplayerOBJ.IsLocal && !gamecore.instance.InDialogue)
         {
             HandleCameraRotation();
+            HandleJumpAndSneak();
             UpdateScreenOffset();
 
             UpdateCamera();
@@ -234,6 +120,7 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+
         if (!gamecore.instance.InLobby && NetworkplayerOBJ.IsLocal)
         {
             // Apply additional downward force for faster falling
@@ -246,11 +133,12 @@ public class PlayerMovement : MonoBehaviour
 
     void HandleCameraRotation()
     {
-        if (lookAction == null || !lookAction.enabled)
+        var mouse = Mouse.current;
+        if (mouse == null)
             return;
 
-        // Get mouse delta movement using InputAction
-        Vector2 mouseDelta = lookAction.ReadValue<Vector2>();
+        // Get mouse delta movement
+        Vector2 mouseDelta = mouse.delta.ReadValue();
         
         // Horizontal rotation (around Y axis)
         rotationY += mouseDelta.x * mouseSensitivity * 0.1f;
@@ -262,9 +150,16 @@ public class PlayerMovement : MonoBehaviour
 
     void MovePlayer()
     {
-        // Use the stored movement input from the callback
-        float horizontal = moveInput.x;
-        float vertical = moveInput.y;
+        float horizontal = 0f;
+        float vertical = 0f;
+        var keyboard = Keyboard.current;
+        if (keyboard != null)
+        {
+            if (keyboard.aKey.isPressed) horizontal -= 1f;
+            if (keyboard.dKey.isPressed) horizontal += 1f;
+            if (keyboard.wKey.isPressed) vertical += 1f;
+            if (keyboard.sKey.isPressed) vertical -= 1f;
+        }
         
         Vector3 forward = playerCamera.transform.forward;
         Vector3 right = playerCamera.transform.right;
@@ -337,25 +232,50 @@ public class PlayerMovement : MonoBehaviour
     {
         animator.Play("jump");
     }
-    
     public void Jump() //Triggered by animation event!
     {
         // Jump when on ground
         rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         hasUsedAirAction = false; // Reset air action on new jump
     }
-    
     public void PreDoubleJump()
     {
         animator.Play("doublejump");
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+
     }
-    
     public void DoubleJump()
     {
         // Set vertical velocity to zero when in air (only once per jump)
         rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         hasUsedAirAction = true; // Mark as used
+    }
+    void HandleJumpAndSneak()
+    {
+        var keyboard = Keyboard.current;
+        if (keyboard != null)
+        {
+            if (keyboard.spaceKey.wasPressedThisFrame)
+            {
+                if (isGrounded)
+                {
+                    PreJump();
+                }
+                else if (!hasUsedAirAction)
+                {
+                    PreDoubleJump();
+                }
+            }
+            
+            if (keyboard.leftShiftKey.wasPressedThisFrame)
+            {
+                isSneaking = true;
+            }
+            if (keyboard.leftShiftKey.wasReleasedThisFrame)
+            {
+                isSneaking = false;
+            }
+        }
     }
     
     private void OnCollisionStay(Collision collision)
@@ -405,22 +325,23 @@ public class PlayerMovement : MonoBehaviour
             // Check for obstructions between pivot and camera
             Vector3 directionToCamera = desiredCameraPosition - pivotPosition;
             float desiredDistance = directionToCamera.magnitude;
-            RaycastHit hit;
-            // Use SphereCast for better collision detection
-            if (Physics.SphereCast(pivotPosition, cameraObstructionCheckRadius, directionToCamera.normalized, out hit, desiredDistance))
-            {
-                // Something is blocking the camera, move it closer
-                float safeDistance = hit.distance - cameraObstructionCheckRadius * 0.5f;
-                safeDistance = Mathf.Max(safeDistance, 1f); // Minimum distance of 1 unit
-                
-                // Place camera at safe distance
-                playerCamera.transform.position = Vector3.Lerp(playerCamera.transform.position, pivotPosition + directionToCamera.normalized * safeDistance, 5 * Time.deltaTime);
-            }
-            else
-            {
-                // No obstruction, place camera at desired position
-                playerCamera.transform.position = desiredCameraPosition;
-            }
+                RaycastHit hit;
+                // Use SphereCast for better collision detection
+                if (Physics.SphereCast(pivotPosition, cameraObstructionCheckRadius, directionToCamera.normalized, out hit, desiredDistance))
+                {
+                    // Something is blocking the camera, move it closer
+                    float safeDistance = hit.distance - cameraObstructionCheckRadius * 0.5f;
+                    safeDistance = Mathf.Max(safeDistance, 1f); // Minimum distance of 1 unit
+                    
+                    // Place camera at safe distance
+                    playerCamera.transform.position = Vector3.Lerp(playerCamera.transform.position,pivotPosition + directionToCamera.normalized * safeDistance,5*Time.deltaTime);
+                }
+                else
+                {
+                    // No obstruction, place camera at desired position
+                    playerCamera.transform.position = desiredCameraPosition;
+                }
+            
         }
     }
 

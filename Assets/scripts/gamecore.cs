@@ -46,7 +46,7 @@ public class gamecore : MonoBehaviour
     public void StartGame(string savename)
     {
         MainScreenUI.instance.animator.Play("mainmenu_prestart");
-        MainScreenUI.instance.StatusDisplay.text = "Starting in 5 seconds...";
+        MainScreenUI.instance.StatusDisplay.text = savename + " - Starting in 5 seconds...";
 
         //Wait 5 seconds 
         StartCoroutine(WaitAndStartGame(savename));
