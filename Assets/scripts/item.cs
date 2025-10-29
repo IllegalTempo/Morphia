@@ -98,31 +98,8 @@ public class item : Selectable
 
     protected override void Update()
     {
-        if (ClickTimer > 0)
-        {
-            ClickTimer -= Time.deltaTime;
-            outline.OutlineWidth = 10f;
-        }
-        else
-        {
-            ClickTimer = 0f;
-            outline.OutlineWidth = 5f;
-
-        }
-        
-        if (LookedAt)
-        {
-
-            outline.enabled = true;
-
-            LookedAt = false || netObj.Owner != -1;
-        }
-        else
-        {
-            outline.enabled = false;
-
-        }
-        if(netObj.Owner == -1)
+        base.Update();
+        if (netObj.Owner == -1)
         {
             rb.constraints = RigidbodyConstraints.FreezeRotation;
         } else
