@@ -49,10 +49,19 @@ public class PlayerMovement : MonoBehaviour
     public float wallCheckDistance = 0.5f; // Distance to check for walls
     public LayerMask wallLayer = -1; // Layer mask for walls (default: everything)
 
-
     public List<item> Inventory = new List<item>();
     public MeshRenderer BodyRenderer;
     public Material[] BodyMaterial;
+
+    // Input Actions
+    private InputAction moveAction;
+    private InputAction lookAction;
+    private InputAction jumpAction;
+    private InputAction sneakAction;
+    
+    // Cached input values
+    private Vector2 moveInput;
+    private Vector2 lookInput;
 
     public void OnPickUpItem(item Item)
     {
@@ -65,15 +74,15 @@ public class PlayerMovement : MonoBehaviour
         Inventory.Remove(Item);
         SetCharacterScreenOffset(Vector2.zero);
     }
+    
     public void OnInitialized(int NetID)
     {
         if (BodyRenderer != null && NetID < BodyMaterial.Length)
         {
             BodyRenderer.material = BodyMaterial[NetID];
         }
-
-
     }
+    
     public void InGameSetup()
     {
         gamecore.instance.InLobby = false;
@@ -86,6 +95,7 @@ public class PlayerMovement : MonoBehaviour
         Cursor.visible = false;
         rb.constraints = RigidbodyConstraints.FreezeRotation;
     }
+    
     void Start()
     {
         DontDestroyOnLoad(this.gameObject);
@@ -94,9 +104,119 @@ public class PlayerMovement : MonoBehaviour
         NetworkplayerOBJ = GetComponent<NetworkPlayerObject>();
         rb.constraints = RigidbodyConstraints.FreezeAll;
         
+        SetupInputActions();
+    }
+
+    void SetupInputActions()
+    {
+        // Movement input (WASD)
+        moveAction = new InputAction("Move", InputActionType.Value);
+        moveAction.AddCompositeBinding("2DVector")
+            .With("Up", "<Keyboard>/w")
+            .With("Down", "<Keyboard>/s")
+            .With("Left", "<Keyboard>/a")
+            .With("Right", "<Keyboard>/d");
         
-        // Lock cursor to center of screen
+        // Mouse look input
+        lookAction = new InputAction("Look", InputActionType.Value);
+        lookAction.AddBinding("<Mouse>/delta");
         
+        // Jump input
+        jumpAction = new InputAction("Jump", InputActionType.Button);
+        jumpAction.AddBinding("<Keyboard>/space");
+        
+        // Sneak input
+        sneakAction = new InputAction("Sneak", InputActionType.Button);
+        sneakAction.AddBinding("<Keyboard>/leftShift");
+        
+        // Subscribe to events
+        moveAction.performed += OnMove;
+        moveAction.canceled += OnMove;
+        
+        lookAction.performed += OnLook;
+        lookAction.canceled += OnLook;
+        
+        jumpAction.performed += OnJump;
+        
+        sneakAction.started += OnSneakStarted;
+        sneakAction.canceled += OnSneakCanceled;
+        
+        // Enable all actions
+        moveAction.Enable();
+        lookAction.Enable();
+        jumpAction.Enable();
+        sneakAction.Enable();
+    }
+
+    void OnDestroy()
+    {
+        // Clean up input actions
+        if (moveAction != null)
+        {
+            moveAction.performed -= OnMove;
+            moveAction.canceled -= OnMove;
+            moveAction.Disable();
+            moveAction.Dispose();
+        }
+        
+        if (lookAction != null)
+        {
+            lookAction.performed -= OnLook;
+            lookAction.canceled -= OnLook;
+            lookAction.Disable();
+            lookAction.Dispose();
+        }
+        
+        if (jumpAction != null)
+        {
+            jumpAction.performed -= OnJump;
+            jumpAction.Disable();
+            jumpAction.Dispose();
+        }
+        
+        if (sneakAction != null)
+        {
+            sneakAction.started -= OnSneakStarted;
+            sneakAction.canceled -= OnSneakCanceled;
+            sneakAction.Disable();
+            sneakAction.Dispose();
+        }
+    }
+
+    // Input callbacks
+    private void OnMove(InputAction.CallbackContext context)
+    {
+        moveInput = context.ReadValue<Vector2>();
+    }
+    
+    private void OnLook(InputAction.CallbackContext context)
+    {
+        lookInput = context.ReadValue<Vector2>();
+    }
+    
+    private void OnJump(InputAction.CallbackContext context)
+    {
+        if (!gamecore.instance.InLobby && NetworkplayerOBJ.IsLocal && !gamecore.instance.InDialogue)
+        {
+            if (isGrounded)
+            {
+                PreJump();
+            }
+            else if (!hasUsedAirAction)
+            {
+                PreDoubleJump();
+            }
+        }
+    }
+    
+    private void OnSneakStarted(InputAction.CallbackContext context)
+    {
+        isSneaking = true;
+    }
+    
+    private void OnSneakCanceled(InputAction.CallbackContext context)
+    {
+        isSneaking = false;
     }
 
     void Update()
@@ -104,7 +224,6 @@ public class PlayerMovement : MonoBehaviour
         if (!gamecore.instance.InLobby && NetworkplayerOBJ.IsLocal && !gamecore.instance.InDialogue)
         {
             HandleCameraRotation();
-            HandleJumpAndSneak();
             UpdateScreenOffset();
 
             UpdateCamera();
@@ -120,7 +239,6 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-
         if (!gamecore.instance.InLobby && NetworkplayerOBJ.IsLocal)
         {
             // Apply additional downward force for faster falling
@@ -133,33 +251,23 @@ public class PlayerMovement : MonoBehaviour
 
     void HandleCameraRotation()
     {
-        var mouse = Mouse.current;
-        if (mouse == null)
+        // Use cached look input from event
+        if (lookInput == Vector2.zero)
             return;
-
-        // Get mouse delta movement
-        Vector2 mouseDelta = mouse.delta.ReadValue();
         
         // Horizontal rotation (around Y axis)
-        rotationY += mouseDelta.x * mouseSensitivity * 0.1f;
+        rotationY += lookInput.x * mouseSensitivity * 0.1f;
         
         // Vertical rotation (around X axis) with clamping
-        rotationX -= mouseDelta.y * mouseSensitivity * 0.1f;
+        rotationX -= lookInput.y * mouseSensitivity * 0.1f;
         rotationX = Mathf.Clamp(rotationX, minVerticalAngle, maxVerticalAngle);
     }
 
     void MovePlayer()
     {
-        float horizontal = 0f;
-        float vertical = 0f;
-        var keyboard = Keyboard.current;
-        if (keyboard != null)
-        {
-            if (keyboard.aKey.isPressed) horizontal -= 1f;
-            if (keyboard.dKey.isPressed) horizontal += 1f;
-            if (keyboard.wKey.isPressed) vertical += 1f;
-            if (keyboard.sKey.isPressed) vertical -= 1f;
-        }
+        // Use cached move input from event
+        float horizontal = moveInput.x;
+        float vertical = moveInput.y;
         
         Vector3 forward = playerCamera.transform.forward;
         Vector3 right = playerCamera.transform.right;
@@ -232,50 +340,25 @@ public class PlayerMovement : MonoBehaviour
     {
         animator.Play("jump");
     }
+    
     public void Jump() //Triggered by animation event!
     {
         // Jump when on ground
         rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         hasUsedAirAction = false; // Reset air action on new jump
     }
+    
     public void PreDoubleJump()
     {
         animator.Play("doublejump");
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
-
     }
+    
     public void DoubleJump()
     {
         // Set vertical velocity to zero when in air (only once per jump)
         rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         hasUsedAirAction = true; // Mark as used
-    }
-    void HandleJumpAndSneak()
-    {
-        var keyboard = Keyboard.current;
-        if (keyboard != null)
-        {
-            if (keyboard.spaceKey.wasPressedThisFrame)
-            {
-                if (isGrounded)
-                {
-                    PreJump();
-                }
-                else if (!hasUsedAirAction)
-                {
-                    PreDoubleJump();
-                }
-            }
-            
-            if (keyboard.leftShiftKey.wasPressedThisFrame)
-            {
-                isSneaking = true;
-            }
-            if (keyboard.leftShiftKey.wasReleasedThisFrame)
-            {
-                isSneaking = false;
-            }
-        }
     }
     
     private void OnCollisionStay(Collision collision)
