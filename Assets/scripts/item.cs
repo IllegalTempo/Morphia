@@ -17,6 +17,22 @@ public class item : Selectable
     Rigidbody rb;
     public NetworkObject netObj;
 
+    private bool PickedUp
+    {
+        get
+        {
+            return netObj.Owner != -1;
+        }
+    }
+    private bool PickedUp_Local
+    {
+        get
+        {
+            return netObj.Owner != -1 && gamecore.instance.IsLocal(netObj.Owner);
+        }
+    }
+
+
     public override void OnClicked()
     {
         base.OnClicked();
@@ -126,7 +142,7 @@ public class item : Selectable
             outline.enabled = false;
 
         }
-        if(netObj.Owner == -1)
+        if(PickedUp)
         {
             rb.constraints = RigidbodyConstraints.FreezeRotation;
         } else

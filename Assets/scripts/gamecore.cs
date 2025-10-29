@@ -293,8 +293,9 @@ public class gamecore : MonoBehaviour
     }
     public IEnumerator LoadScene(string scenename)
     {
-        StartLoading("Loading Scene: " + scenename);
         ToSave();
+
+        StartLoading("Loading Scene: " + scenename);
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(scenename);
 
         // Optional: prevent scene from activating immediately

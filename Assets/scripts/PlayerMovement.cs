@@ -58,6 +58,7 @@ public class PlayerMovement : MonoBehaviour
     private InputAction lookAction;
     private InputAction jumpAction;
     private InputAction sneakAction;
+    private InputAction[] allInputActions;
     
     // Cached input values
     private Vector2 moveInput;
@@ -116,70 +117,71 @@ public class PlayerMovement : MonoBehaviour
             .With("Down", "<Keyboard>/s")
             .With("Left", "<Keyboard>/a")
             .With("Right", "<Keyboard>/d");
+        moveAction.performed += OnMove;
+        moveAction.canceled += OnMove;
         
         // Mouse look input
         lookAction = new InputAction("Look", InputActionType.Value);
         lookAction.AddBinding("<Mouse>/delta");
+        lookAction.performed += OnLook;
+        lookAction.canceled += OnLook;
         
         // Jump input
         jumpAction = new InputAction("Jump", InputActionType.Button);
         jumpAction.AddBinding("<Keyboard>/space");
+        jumpAction.performed += OnJump;
         
         // Sneak input
         sneakAction = new InputAction("Sneak", InputActionType.Button);
         sneakAction.AddBinding("<Keyboard>/leftShift");
-        
-        // Subscribe to events
-        moveAction.performed += OnMove;
-        moveAction.canceled += OnMove;
-        
-        lookAction.performed += OnLook;
-        lookAction.canceled += OnLook;
-        
-        jumpAction.performed += OnJump;
-        
         sneakAction.started += OnSneakStarted;
         sneakAction.canceled += OnSneakCanceled;
         
         // Enable all actions
-        moveAction.Enable();
-        lookAction.Enable();
-        jumpAction.Enable();
-        sneakAction.Enable();
+        allInputActions = new[] { moveAction, lookAction, jumpAction, sneakAction };
+        foreach (var action in allInputActions)
+        {
+            action.Enable();
+        }
     }
 
     void OnDestroy()
     {
-        // Clean up input actions
+        // Clean up input actions with unified pattern
         if (moveAction != null)
         {
             moveAction.performed -= OnMove;
             moveAction.canceled -= OnMove;
-            moveAction.Disable();
-            moveAction.Dispose();
         }
         
         if (lookAction != null)
         {
             lookAction.performed -= OnLook;
             lookAction.canceled -= OnLook;
-            lookAction.Disable();
-            lookAction.Dispose();
         }
         
         if (jumpAction != null)
         {
             jumpAction.performed -= OnJump;
-            jumpAction.Disable();
-            jumpAction.Dispose();
         }
         
         if (sneakAction != null)
         {
             sneakAction.started -= OnSneakStarted;
             sneakAction.canceled -= OnSneakCanceled;
-            sneakAction.Disable();
-            sneakAction.Dispose();
+        }
+        
+        // Disable and dispose all actions
+        if (allInputActions != null)
+        {
+            foreach (var action in allInputActions)
+            {
+                if (action != null)
+                {
+                    action.Disable();
+                    action.Dispose();
+                }
+            }
         }
     }
 
@@ -225,15 +227,10 @@ public class PlayerMovement : MonoBehaviour
         {
             HandleCameraRotation();
             UpdateScreenOffset();
-
             UpdateCamera();
             UpdateHeadRotation();
             UpdateBodyRotation();
-
-            if (Physics.Raycast(transform.position, Vector3.down, gamecore.instance.groundCheckDistance, gamecore.instance.groundLayer))
-            {
-                IsGrounded = true;
-            }
+            UpdateGroundDetection();
         }
     }
 
@@ -260,6 +257,14 @@ public class PlayerMovement : MonoBehaviour
         
         // Vertical rotation (around X axis) with clamping
         rotationX -= lookInput.y * mouseSensitivity * 0.1f;
+        ClampRotationX();
+    }
+    
+    /// <summary>
+    /// Clamps vertical camera rotation to prevent looking too far up/down
+    /// </summary>
+    private void ClampRotationX()
+    {
         rotationX = Mathf.Clamp(rotationX, minVerticalAngle, maxVerticalAngle);
     }
 
@@ -269,13 +274,7 @@ public class PlayerMovement : MonoBehaviour
         float horizontal = moveInput.x;
         float vertical = moveInput.y;
         
-        Vector3 forward = playerCamera.transform.forward;
-        Vector3 right = playerCamera.transform.right;
-        forward.y = 0f;
-        right.y = 0f;
-        forward.Normalize();
-        right.Normalize();
-        Vector3 direction = (forward * vertical + right * horizontal).normalized;
+        Vector3 direction = GetHorizontalMovementDirection(horizontal, vertical);
         
         float speed = isSneaking ? sneakSpeed : moveSpeed;
         
@@ -292,23 +291,59 @@ public class PlayerMovement : MonoBehaviour
             else
             {
                 // If blocked by wall, dampen velocity in that direction to prevent sticking
-                Vector3 currentHorizontalVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
-                float velocityInMoveDirection = Vector3.Dot(currentHorizontalVelocity, direction);
-
-                if (velocityInMoveDirection > 0f)
-                {
-                    // Remove velocity component toward the wall
-                    Vector3 velocityTowardWall = direction * velocityInMoveDirection;
-                    rb.linearVelocity = new Vector3(
-                        rb.linearVelocity.x - velocityTowardWall.x,
-                        rb.linearVelocity.y,
-                        rb.linearVelocity.z - velocityTowardWall.z
-                    );
-                }
+                DampenVelocityInDirection(direction);
             }
         }
         
         // Restrict max horizontal velocity
+        RestrictHorizontalVelocity();
+    }
+    
+    /// <summary>
+    /// Calculates normalized horizontal movement direction from camera view
+    /// </summary>
+    private Vector3 GetHorizontalMovementDirection(float horizontal, float vertical)
+    {
+        Vector3 forward = playerCamera.transform.forward;
+        Vector3 right = playerCamera.transform.right;
+        FlattenVector(forward);
+        FlattenVector(right);
+        return (forward * vertical + right * horizontal).normalized;
+    }
+    
+    /// <summary>
+    /// Removes Y component and normalizes a vector (mutates the passed vector)
+    /// </summary>
+    private void FlattenVector(Vector3 vector)
+    {
+        vector.y = 0f;
+        vector.Normalize();
+    }
+    
+    /// <summary>
+    /// Dampens velocity component in a specific direction to prevent wall sticking
+    /// </summary>
+    private void DampenVelocityInDirection(Vector3 direction)
+    {
+        Vector3 currentHorizontalVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+        float velocityInMoveDirection = Vector3.Dot(currentHorizontalVelocity, direction);
+
+        if (velocityInMoveDirection > 0f)
+        {
+            Vector3 velocityTowardWall = direction * velocityInMoveDirection;
+            rb.linearVelocity = new Vector3(
+                rb.linearVelocity.x - velocityTowardWall.x,
+                rb.linearVelocity.y,
+                rb.linearVelocity.z - velocityTowardWall.z
+            );
+        }
+    }
+    
+    /// <summary>
+    /// Restricts the player's horizontal velocity to the maximum allowed speed
+    /// </summary>
+    private void RestrictHorizontalVelocity()
+    {
         Vector3 horizontalVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
         if (horizontalVelocity.magnitude > maxHorizontalSpeed)
         {
@@ -328,9 +363,7 @@ public class PlayerMovement : MonoBehaviour
         // Use SphereCast to detect walls
         if (Physics.SphereCast(origin, 1f, direction, out hit, wallCheckDistance, gamecore.instance.groundLayer))
         {
-            // Check if the hit surface is vertical (a wall, not ground/ceiling)
-            //float surfaceAngle = Vector3.Angle(hit.normal, Vector3.up);
-            return true; // Consider it a wall if angle is steep
+            return true;
         }
         
         return false;
@@ -380,10 +413,22 @@ public class PlayerMovement : MonoBehaviour
     }
     
     /// <summary>
-    /// Check if player is on the ground using raycast
+    /// Updates ground detection using both collision and raycasting for reliability
     /// </summary>
-    public bool IsGrounded;
+    private void UpdateGroundDetection()
+    {
+        // Check via raycast as fallback/additional confirmation
+        if (Physics.Raycast(transform.position, Vector3.down, gamecore.instance.groundCheckDistance, gamecore.instance.groundLayer))
+        {
+            isGrounded = true;
+        }
+        // If no raycast hit, isGrounded will be maintained by collision callbacks
+    }
     
+    /// <summary>
+    /// Get the ground state
+    /// </summary>
+    public bool IsGrounded => isGrounded;
     
     void UpdateScreenOffset()
     {
@@ -406,25 +451,33 @@ public class PlayerMovement : MonoBehaviour
             Vector3 desiredCameraPosition = pivotPosition + playerCamera.transform.rotation * cameraOffset;
             
             // Check for obstructions between pivot and camera
-            Vector3 directionToCamera = desiredCameraPosition - pivotPosition;
-            float desiredDistance = directionToCamera.magnitude;
-                RaycastHit hit;
-                // Use SphereCast for better collision detection
-                if (Physics.SphereCast(pivotPosition, cameraObstructionCheckRadius, directionToCamera.normalized, out hit, desiredDistance))
-                {
-                    // Something is blocking the camera, move it closer
-                    float safeDistance = hit.distance - cameraObstructionCheckRadius * 0.5f;
-                    safeDistance = Mathf.Max(safeDistance, 1f); // Minimum distance of 1 unit
-                    
-                    // Place camera at safe distance
-                    playerCamera.transform.position = Vector3.Lerp(playerCamera.transform.position,pivotPosition + directionToCamera.normalized * safeDistance,5*Time.deltaTime);
-                }
-                else
-                {
-                    // No obstruction, place camera at desired position
-                    playerCamera.transform.position = desiredCameraPosition;
-                }
+            UpdateCameraPositionWithObstruction(pivotPosition, desiredCameraPosition);
+        }
+    }
+    
+    /// <summary>
+    /// Updates camera position, handling obstructions between pivot and desired position
+    /// </summary>
+    private void UpdateCameraPositionWithObstruction(Vector3 pivotPosition, Vector3 desiredCameraPosition)
+    {
+        Vector3 directionToCamera = desiredCameraPosition - pivotPosition;
+        float desiredDistance = directionToCamera.magnitude;
+        RaycastHit hit;
+        
+        // Use SphereCast for better collision detection
+        if (Physics.SphereCast(pivotPosition, cameraObstructionCheckRadius, directionToCamera.normalized, out hit, desiredDistance))
+        {
+            // Something is blocking the camera, move it closer
+            float safeDistance = hit.distance - cameraObstructionCheckRadius * 0.5f;
+            safeDistance = Mathf.Max(safeDistance, 1f); // Minimum distance of 1 unit
             
+            // Place camera at safe distance
+            playerCamera.transform.position = Vector3.Lerp(playerCamera.transform.position, pivotPosition + directionToCamera.normalized * safeDistance, 5 * Time.deltaTime);
+        }
+        else
+        {
+            // No obstruction, place camera at desired position
+            playerCamera.transform.position = desiredCameraPosition;
         }
     }
 
@@ -443,22 +496,23 @@ public class PlayerMovement : MonoBehaviour
         );
 
         // Check angle between head forward and body forward
-        Vector3 headForward = PlayerHead.transform.forward;
-        Vector3 bodyForward = transform.forward;
-        
-        // Flatten to horizontal plane for comparison
-        headForward.y = 0f;
-        bodyForward.y = 0f;
-        headForward.Normalize();
-        bodyForward.Normalize();
-
-        float angle = Vector3.Angle(bodyForward, headForward);
+        float angle = GetHorizontalAngleBetweenVectors(PlayerHead.transform.forward, transform.forward);
 
         // If angle exceeds 45 degrees, update target body rotation
         if (angle > 45f)
         {
             targetBodyRotationY = rotationY;
         }
+    }
+    
+    /// <summary>
+    /// Gets the angle between two vectors on the horizontal plane
+    /// </summary>
+    private float GetHorizontalAngleBetweenVectors(Vector3 vectorA, Vector3 vectorB)
+    {
+        FlattenVector(vectorA);
+        FlattenVector(vectorB);
+        return Vector3.Angle(vectorB, vectorA);
     }
     
     void UpdateBodyRotation()
