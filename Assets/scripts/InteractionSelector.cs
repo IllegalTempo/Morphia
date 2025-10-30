@@ -8,9 +8,16 @@ public class InteractionSelector : MonoBehaviour
     public item PickingUp_Item = null;
     private void Start()
     {
-        movement = GetComponent<PlayerMovement>();
-        if (!GetComponent<NetworkPlayerObject>().IsLocal) Destroy(this);
-        gamecore.instance.I_interactionSelector = this;
+        if (!GetComponent<NetworkPlayerObject>().IsLocal)
+        {
+            Destroy(this);
+        } else
+        {
+            movement = GetComponent<PlayerMovement>();
+
+            gamecore.instance.I_interactionSelector = this;
+
+        }
 
     }
 
