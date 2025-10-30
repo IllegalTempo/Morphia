@@ -110,7 +110,6 @@ public class save
     /// </summary>
     public bool LoadFromFile(string path) 
     {
-        path = path += ".json";
         Debug.Log("Loading from path " + path);
         //Print values in save:
         try

@@ -115,7 +115,7 @@ public class MainScreenUI : MonoBehaviour
     public void OnSaveButtonClicked(string savename, Vector2 SaveButtonAnchoredPos)
     {
         SelectedSaveIndicator.SetActive(true);
-        gamecore.instance.SelectedSaveName = savename;
+        gamecore.instance.SelectedSaveName = save.instance.GetSavePath(savename);
         SelectedSavePos = SaveButtonAnchoredPos + SaveButtonPosOffset;
     }
 
