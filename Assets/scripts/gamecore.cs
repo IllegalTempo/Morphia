@@ -219,7 +219,6 @@ public class gamecore : MonoBehaviour
             }
         }
 
-        ToSave();
 
         SaveLoaded = true;
     }

@@ -14,5 +14,9 @@ public class SceneData : MonoBehaviour
     {
         StartCoroutine(gamecore.instance.LoadScene(NextSceneName));
     }
-    
+    private void Awake()
+    {
+        gamecore.instance.CurrentStage = this;
+    }
+
 }
