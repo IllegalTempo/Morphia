@@ -46,7 +46,7 @@ public class gamecore : MonoBehaviour
     public void StartGame(string savename)
     {
         MainScreenUI.instance.animator.Play("mainmenu_prestart");
-        MainScreenUI.instance.StatusDisplay.text ="Starting in 5 seconds...";
+        MainScreenUI.instance.StatusDisplay.text = "Starting in 5 seconds...";
         Debug.Log("StartGame " + savename);
 
         //Wait 5 seconds 
@@ -186,7 +186,7 @@ public class gamecore : MonoBehaviour
     }
     private void SetUpScene(SceneData sd)
     {
-        
+
         foreach (item item in sd.items)
         {
             ItemIdentifier identifier = new ItemIdentifier(sd.stage, item.ItemID);
@@ -202,11 +202,12 @@ public class gamecore : MonoBehaviour
         }
 
         //if sdnpcs null
-        if(sd.npcs == null)
+        if (sd.npcs == null)
         {
             Debug.LogWarning("SceneData NPCs is null!");
-            
-        } else
+
+        }
+        else
         {
             foreach (npc npc in sd.npcs)
             {
@@ -307,34 +308,48 @@ public class gamecore : MonoBehaviour
         save.instance.CurrentStage = CurrentStage.stage;
 
         // Save player positions and rotations
-        
 
 
-        // Save all items in the current stage
-        foreach (item item in CurrentStage.items)
+        if (CurrentStage.items == null)
         {
-            ItemIdentifier identifier = new ItemIdentifier(CurrentStage.stage, item.ItemID);
-            SaveInfo_Item savedItem = new SaveInfo_Item(
-                item.transform.position,
-                item.transform.rotation,
-                item.netObj.Owner
-            );
+            Debug.LogWarning("Cannot save items: CurrentStage.items is null");
 
-            // Add to both the list (for serialization) and dictionary (for quick lookup)
-            ItemDataEntry entry = new ItemDataEntry
+        }
+        else
+        {
+            foreach (item item in CurrentStage.items)
             {
-                identifier = identifier,
-                itemInfo = savedItem
-            };
-            save.instance.FindSavedItem[identifier] = savedItem;
+                ItemIdentifier identifier = new ItemIdentifier(CurrentStage.stage, item.ItemID);
+                SaveInfo_Item savedItem = new SaveInfo_Item(
+                    item.transform.position,
+                    item.transform.rotation,
+                    item.netObj.Owner
+                );
+
+                // Add to both the list (for serialization) and dictionary (for quick lookup)
+                ItemDataEntry entry = new ItemDataEntry
+                {
+                    identifier = identifier,
+                    itemInfo = savedItem
+                };
+                save.instance.FindSavedItem[identifier] = savedItem;
+            }
         }
+        // Save all items in the current stage
 
 
-        // Save all NPCs in the current stage
-        foreach (npc npc in CurrentStage.npcs)
+        if (CurrentStage.npcs == null)
         {
-            save.instance.FindNPC[npc.NpcName] = npc;
+            Debug.LogWarning("Cannot save NPCs: CurrentStage.npcs is null");
         }
+        else
+        {
+            foreach (npc npc in CurrentStage.npcs)
+            {
+                save.instance.FindNPC[npc.NpcName] = npc;
+            }
+        }
+
         save.instance.ParseDict();
         save.instance.SaveToFile(save.instance.GetSavePath(save.instance.CurrentSaveName));
 
