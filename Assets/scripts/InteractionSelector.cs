@@ -9,8 +9,9 @@ public class InteractionSelector : MonoBehaviour
     private void Start()
     {
         movement = GetComponent<PlayerMovement>();
-        gamecore.instance.I_interactionSelector = this;
         if (!GetComponent<NetworkPlayerObject>().IsLocal) Destroy(this);
+        gamecore.instance.I_interactionSelector = this;
+
     }
 
     // Update is called once per frame
