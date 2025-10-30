@@ -205,7 +205,7 @@ public class gamecore : MonoBehaviour
         if(sd.npcs == null)
         {
             Debug.LogWarning("SceneData NPCs is null!");
-            return;
+            
         } else
         {
             foreach (npc npc in sd.npcs)
@@ -231,8 +231,6 @@ public class gamecore : MonoBehaviour
         LoadingScreen.SetActive(false);
 
         SceneData sd = GameObject.Find("SceneCore").GetComponent<SceneData>();
-        if (sd.IsLobby) return;
-        LocalPlayer.playerMovement.InGameSetup();
 
         if (NetworkSystem.instance.IsServer)
         {
@@ -243,6 +241,9 @@ public class gamecore : MonoBehaviour
                 PacketSend.Server_Send_DistributeInitialPos(player.Value, sd.Spawnpoint[NetworkID % sd.Spawnpoint.Length].position, sd.Spawnpoint[NetworkID % sd.Spawnpoint.Length].rotation);
             }
         }
+        if (sd.IsLobby) return;
+        LocalPlayer.playerMovement.InGameSetup();
+
 
         SetUpScene(sd);
 
