@@ -12,7 +12,7 @@ public class save
     public List<npc> npcs = new List<npc>();
     public Dictionary<ItemIdentifier,SaveInfo_Item> FindSavedItem = new Dictionary<ItemIdentifier, SaveInfo_Item>();
     public Dictionary<string,npc> FindNPC = new Dictionary<string, npc>();
-    public string CurrentStage = "intro";
+    public string CurrentStage = "";
     public string CurrentSaveName = "";
     public static save instance = new save();
 
@@ -108,9 +108,11 @@ public class save
     /// <summary>
     /// Loads the game state from a JSON file
     /// </summary>
-    public bool LoadFromFile(string path)
+    public bool LoadFromFile(string path) 
     {
+        path = path += ".json";
         Debug.Log("Loading from path " + path);
+        //Print values in save:
         try
         {
             CurrentSaveName = GetSaveName(path);
@@ -128,6 +130,7 @@ public class save
             // Deserialize from JSON (overwrites current instance data)
             JsonUtility.FromJsonOverwrite(json, this);
             ParseList();
+            PrintSaveContents(); // Print values after loading
             
             Debug.Log("Game loaded successfully from: " + path);
             return true;
@@ -136,6 +139,29 @@ public class save
         {
             Debug.LogError("Failed to load game: " + e.Message);
             return false;
+        }
+    }
+
+    public void PrintSaveContents()
+    {
+        Debug.Log($"CurrentSaveName: {CurrentSaveName}");
+        Debug.Log($"CurrentStage: {CurrentStage}");
+        Debug.Log($"ItemData count: {ItemData.Count}");
+        foreach (var item in ItemData)
+        {
+            Debug.Log($"Item: stage={item.identifier?.stage}, id={item.identifier?.ItemID}, pos={item.itemInfo?.position}, rot={item.itemInfo?.rotation}, Parented_To_Player={item.itemInfo?.Parented_To_Player}");
+        }
+        Debug.Log($"NPCs count: {npcs.Count}");
+        foreach (var n in npcs)
+        {
+            Debug.Log($"NPC: name={n.NpcName}, conversations={n.Conversations?.Count}");
+            if (n.Conversations != null)
+            {
+                foreach (var conv in n.Conversations)
+                {
+                    Debug.Log($"  Conversation: key={conv.conversationKey}, dialogues={conv.Dialogues?.Length}");
+                }
+            }
         }
     }
 

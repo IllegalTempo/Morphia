@@ -262,8 +262,8 @@ public class gamecore : MonoBehaviour
     }
     public IEnumerator UseSave(string savename) //Use it when all players is in lobby!
     {
-        Debug.Log("Server using save " + savename);
-        Debug.Log("Server using save " + save.instance.GetSavePath(savename));
+        Debug.Log("Server using save " + savename + "Stage:" + save.instance.CurrentStage);
+
         yield return StartCoroutine(LoadScene(save.instance.CurrentStage));
 
     }
