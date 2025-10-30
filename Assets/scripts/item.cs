@@ -178,8 +178,9 @@ public class item : Selectable
         }
         if(StickingTo != null)
         {
-            // slowly follow the stickingTo position
-            transform.position = Vector3.Lerp(transform.position, StickingTo.transform.position, Time.deltaTime * 5f);
+            // add force toward stickingto position
+            Vector3 directionToStick = (StickingTo.transform.position - transform.position).normalized;
+            rb.AddForce(directionToStick * 10f);
 
         }
         DuringStickEffect();
