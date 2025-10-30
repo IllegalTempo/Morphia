@@ -49,11 +49,26 @@ public class item : Selectable
             PickUpItem();
         }
     }
+    public virtual void StickEffect()
+    {
+    }
+    public virtual void UnStickEffect()
+    {
+    }
     public void StickTo(item other)
     {
         netObj.Sync_Position = false;
         netObj.Sync_Rotation = false;
         Drop(transform.position);
+        StickingTo = other;
+        StickEffect();
+    }
+    public void UnStick()
+    {
+        netObj.Sync_Position = true;
+        netObj.Sync_Rotation = true;
+        StickingTo = null;
+        UnStickEffect();
     }
     private void PickUpItem()
     {
