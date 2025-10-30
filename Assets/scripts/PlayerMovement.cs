@@ -63,6 +63,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 moveInput;
     private Vector2 lookInput;
 
+
     public void OnPickUpItem(item Item)
     {
         Inventory.Add(Item);

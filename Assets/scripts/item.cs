@@ -9,11 +9,10 @@ public class item : Selectable
     public string ItemDescription;
     public Sprite ItemIcon;
     public int ItemID = -1;
-    private Transform OriginalParent;
     Collider itemCollider;
     public static Vector3 inventoryOffset = new Vector3(0, 0, 16); // Offset from camera when in inventory
     public bool followCameraRotation = false; // Whether item rotates with camera
-
+    public item StickingTo;
     Rigidbody rb;
     public NetworkObject netObj;
 
@@ -50,12 +49,19 @@ public class item : Selectable
             PickUpItem();
         }
     }
-
+    public void StickTo(item other)
+    {
+        netObj.Sync_Position = false;
+        netObj.Sync_Rotation = false;
+        Drop(transform.position);
+    }
     private void PickUpItem()
     {
-
+        gameObject.layer = 0;
+        
         rb.linearVelocity = Vector3.zero;
         gamecore.instance.LocalPlayer.playerMovement.OnPickUpItem(this);
+        gamecore.instance.I_interactionSelector.PickingUp_Item = this;
         outline.OutlineColor = Color.aquamarine;
         LookedAt = true;
         // Get collider in itself or children and disable it
@@ -78,13 +84,14 @@ public class item : Selectable
     public void Drop(Vector3 dropPosition)
     {
 
+        gameObject.layer = 6;
 
         // Remove from inventory
         gamecore.instance.LocalPlayer.playerMovement.OnDropItem(this);
+        gamecore.instance.I_interactionSelector.PickingUp_Item = null;
         outline.OutlineColor = Color.white;
 
         this.transform.position = dropPosition;
-        this.transform.parent = OriginalParent;
 
         itemCollider.enabled = true;
         netObj.Owner = -1;
@@ -103,7 +110,6 @@ public class item : Selectable
     private void Start()
     {
         if (ItemID == -1) { Destroy(this.gameObject); Debug.LogError($"Destroyed {gameObject.name}"); }
-        OriginalParent = this.transform.parent;
         itemCollider = GetComponent<Collider>();
         rb = GetComponent<Rigidbody>();
         netObj = GetComponent<NetworkObject>();

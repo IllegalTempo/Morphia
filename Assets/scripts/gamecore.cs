@@ -23,6 +23,9 @@ public class gamecore : MonoBehaviour
     public TMP_Text DialogueText;
 
 
+    public InteractionSelector I_interactionSelector;
+
+
     public NetworkPlayerObject LocalPlayer;
     public bool InLobby = true;
     public bool InDialogue = false;

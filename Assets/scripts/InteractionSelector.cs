@@ -5,10 +5,11 @@ public class InteractionSelector : MonoBehaviour
 {
     PlayerMovement movement;
     public Selectable seenOutline = null;
-    public Selectable ClickedOutline = null;
+    public item PickingUp_Item = null;
     private void Start()
     {
         movement = GetComponent<PlayerMovement>();
+        gamecore.instance.I_interactionSelector = this;
         if (!GetComponent<NetworkPlayerObject>().IsLocal) Destroy(this);
     }
 
@@ -24,9 +25,14 @@ public class InteractionSelector : MonoBehaviour
             seenOutline = hit.collider.gameObject.GetComponent<Selectable>();
             if (seenOutline == null) return;
             seenOutline.LookedAt = true;
-            // Use the new Input System for mouse click
-            
+            //If press F this frame
+            if (PickingUp_Item != null && Keyboard.current.fKey.wasPressedThisFrame && seenOutline is item)
+            {
+                PickingUp_Item.StickTo((item)seenOutline);
+            }
+
         }
+
         
     }
 }
