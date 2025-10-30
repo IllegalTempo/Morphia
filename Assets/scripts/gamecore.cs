@@ -134,6 +134,8 @@ public class gamecore : MonoBehaviour
     {
         MainScreenUI.instance.StatusDisplay.text = p.SteamName + " Has Joined!";
         Debug.Log("Second Player Joined: " + p.SteamName + SelectedSaveName);
+        save.instance.LoadFromFile(SelectedSaveName);
+
         StartGame(SelectedSaveName);
         PacketSend.Server_Send_StartGame(save.instance.CurrentStage);
 
@@ -262,7 +264,6 @@ public class gamecore : MonoBehaviour
     {
         Debug.Log("Server using save " + savename);
         Debug.Log("Server using save " + save.instance.GetSavePath(savename));
-        save.instance.LoadFromFile(save.instance.GetSavePath(savename));
         yield return StartCoroutine(LoadScene(save.instance.CurrentStage));
 
     }
