@@ -4211,6 +4211,7 @@ MonoBehaviour:
   LoadingText: {fileID: 327533731}
   DialogueUI: {fileID: 432286516}
   DialogueText: {fileID: 2055439629}
+  I_interactionSelector: {fileID: 0}
   LocalPlayer: {fileID: 0}
   InLobby: 1
   InDialogue: 0

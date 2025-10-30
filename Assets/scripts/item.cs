@@ -55,6 +55,10 @@ public class item : Selectable
     public virtual void UnStickEffect()
     {
     }
+    public virtual void DuringStickEffect()
+    {
+
+    }
     public void StickTo(item other)
     {
         netObj.Sync_Position = false;
@@ -165,11 +169,21 @@ public class item : Selectable
         }
         if(PickedUp)
         {
-            rb.constraints = RigidbodyConstraints.FreezeRotation;
+            rb.constraints = RigidbodyConstraints.FreezeAll;
+
         } else
         {
-            rb.constraints = RigidbodyConstraints.FreezeAll;
+            rb.constraints = RigidbodyConstraints.FreezeRotation;
+
         }
+        if(StickingTo != null)
+        {
+            // slowly follow the stickingTo position
+            transform.position = Vector3.Lerp(transform.position, StickingTo.transform.position, Time.deltaTime * 5f);
+
+        }
+        DuringStickEffect();
+
         if (gamecore.instance.IsLocal(netObj.Owner) && Camera.main != null)
         {
             // Update position to follow camera
