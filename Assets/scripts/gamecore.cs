@@ -186,18 +186,7 @@ public class gamecore : MonoBehaviour
     }
     private void SetUpScene(SceneData sd)
     {
-        if (SaveLoaded) //If save is Loaded, set player position
-        {
-            CurrentStage = sd;
-            if (LocalPlayer != null)
-            {
-                LocalPlayer.transform.position = sd.Spawnpoint[LocalPlayer.NetworkID % sd.Spawnpoint.Length].position;
-            }
-            else
-            {
-                Debug.LogError("LocalPlayer is null on scene load!");
-            }
-        }
+        
         foreach (item item in sd.items)
         {
             ItemIdentifier identifier = new ItemIdentifier(sd.stage, item.ItemID);
@@ -211,6 +200,7 @@ public class gamecore : MonoBehaviour
 
             }
         }
+
         //if sdnpcs null
         if(sd.npcs == null)
         {
@@ -228,7 +218,9 @@ public class gamecore : MonoBehaviour
                 }
             }
         }
-            
+
+        ToSave();
+
         SaveLoaded = true;
     }
     public void OnSceneLoad(UnityEngine.SceneManagement.Scene scene, LoadSceneMode mode)
@@ -293,7 +285,6 @@ public class gamecore : MonoBehaviour
     }
     public IEnumerator LoadScene(string scenename)
     {
-        ToSave();
 
         StartLoading("Loading Scene: " + scenename);
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(scenename);
