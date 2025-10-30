@@ -243,7 +243,7 @@ public class gamecore : MonoBehaviour
         if (sd.IsLobby) return;
         LocalPlayer.playerMovement.InGameSetup();
 
-
+        ToSave();
         SetUpScene(sd);
 
 
