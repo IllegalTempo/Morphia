@@ -8,7 +8,6 @@ using UnityEngine;
 [Serializable]
 public class save
 {
-    public SaveInfo_Player[] playerSaveInfos = new SaveInfo_Player[2];
     public List<ItemDataEntry> ItemData = new List<ItemDataEntry>();
     public List<npc> npcs = new List<npc>();
     public Dictionary<ItemIdentifier,SaveInfo_Item> FindSavedItem = new Dictionary<ItemIdentifier, SaveInfo_Item>();
@@ -76,11 +75,6 @@ public class save
     public void NewSave(string saveName)
     {
         CurrentSaveName = saveName;
-        playerSaveInfos = new SaveInfo_Player[2]
-        {
-            new SaveInfo_Player(new Vector3(0,100,0), Quaternion.identity),
-            new SaveInfo_Player(new Vector3(0,100,0), Quaternion.identity)
-        };
         ItemData = new List<ItemDataEntry>();
         CurrentStage = "intro";
         SaveToFile(GetSavePath(saveName));

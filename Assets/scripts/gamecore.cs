@@ -236,6 +236,7 @@ public class gamecore : MonoBehaviour
 
         if (NetworkSystem.instance.IsServer)
         {
+            LocalPlayer.playerMovement.transform.position = sd.Spawnpoint[0].position;
             foreach (KeyValuePair<ulong, NetworkPlayer> player in NetworkSystem.instance.server.players)
             {
                 int NetworkID = player.Value.NetworkID;
@@ -260,22 +261,6 @@ public class gamecore : MonoBehaviour
         save.instance.LoadFromFile(save.instance.GetSavePath(savename));
         yield return StartCoroutine(LoadScene(save.instance.CurrentStage));
 
-        foreach (NetworkPlayerObject p in NetworkSystem.instance.PlayerList)
-        {
-            if (p.NetworkID > save.instance.playerSaveInfos.Length)
-            {
-                Debug.LogError($"Network ID {p.NetworkID} not in playerSaveInfo");
-            }
-            else
-            {
-                SaveInfo_Player player = save.instance.playerSaveInfos[p.NetworkID];
-                p.transform.position = player.position;
-                p.transform.rotation = player.rotation;
-
-            }
-
-
-        }
     }
     public void StartLoading(string loadingtext)
     {
@@ -322,20 +307,7 @@ public class gamecore : MonoBehaviour
         save.instance.CurrentStage = CurrentStage.stage;
 
         // Save player positions and rotations
-        foreach (NetworkPlayerObject player in NetworkSystem.instance.PlayerList)
-        {
-            if (player.NetworkID < save.instance.playerSaveInfos.Length)
-            {
-                save.instance.playerSaveInfos[player.NetworkID] = new SaveInfo_Player(
-                    player.transform.position,
-                    player.transform.rotation
-                );
-            }
-            else
-            {
-                Debug.LogError($"Network ID {player.NetworkID} exceeds playerSaveInfos array length");
-            }
-        }
+        
 
 
         // Save all items in the current stage
