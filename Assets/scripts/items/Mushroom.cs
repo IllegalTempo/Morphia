@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class Mushroom : item
 {
-    private Vector3 originalScale;
     private float scaleMultiplier = 1.5f; // Makes the stuck item 50% larger
 
     public override void StickEffect()
@@ -11,8 +10,7 @@ public class Mushroom : item
         
         if (StickingTo != null)
         {
-            originalScale = StickingTo.transform.localScale;
-            StickingTo.transform.localScale = originalScale * scaleMultiplier;
+            StickingTo.transform.localScale *= scaleMultiplier;
         }
     }
 
@@ -22,7 +20,7 @@ public class Mushroom : item
         
         if (StickingTo != null)
         {
-            StickingTo.transform.localScale = originalScale;
+            StickingTo.transform.localScale /= scaleMultiplier;
         }
     }
 
@@ -30,10 +28,5 @@ public class Mushroom : item
     {
         base.DuringStickEffect();
         
-        // Maintain the scale during the stick effect
-        if (StickingTo != null)
-        {
-            StickingTo.transform.localScale = originalScale * scaleMultiplier;
-        }
     }
 }
