@@ -15,7 +15,6 @@ public class item : Selectable
     public item StickingTo;
     Rigidbody rb;
     public NetworkObject netObj;
-    
     [Header("Stick Settings")]
     public float maxStickForce = 10f; // Maximum force when far away
     public float minStickDistance = 0.5f; // Distance at which force becomes zero
@@ -69,6 +68,7 @@ public class item : Selectable
         netObj.Sync_Rotation = false;
         Drop(transform.position);
         StickingTo = other;
+        itemCollider.enabled = false;
         StickEffect();
     }
     public void UnStick()
@@ -76,6 +76,8 @@ public class item : Selectable
         netObj.Sync_Position = true;
         netObj.Sync_Rotation = true;
         StickingTo = null;
+        itemCollider.enabled = true;
+
         UnStickEffect();
     }
     private void PickUpItem()
@@ -141,6 +143,7 @@ public class item : Selectable
         {
             rb.constraints = RigidbodyConstraints.FreezeAll;
         }
+
     }
 
     protected override void Update()
