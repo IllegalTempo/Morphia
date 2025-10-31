@@ -57,7 +57,7 @@ public class item : Selectable
         else
         {
             // Item is not in inventory, so pick it up
-            PickUpItem(true);
+            PickUpItem(gamecore.instance.LocalPlayer.NetworkID);
             if (NetworkSystem.instance.IsServer)
             {
                 PacketSend.Server_Send_DistributePickUpItem(netObj.Identifier, netObj.Owner);
@@ -109,12 +109,13 @@ public class item : Selectable
 
         StickingTo = null;
     }
-    public void PickUpItem(bool local)
+    public void PickUpItem(int networkID)
     {
         Debug.Log($"Picking up item: {ItemName}");
         gameObject.layer = 0;
 
-        if(local)
+        bool local = gamecore.instance.IsLocal(networkID);
+        if (local)
         {
             gamecore.instance.LocalPlayer.playerMovement.OnPickUpItem(this);
             gamecore.instance.I_interactionSelector.PickingUp_Item = this;
@@ -129,7 +130,7 @@ public class item : Selectable
         {
             itemCollider.enabled = false;
         }
-        netObj.Owner = gamecore.instance.LocalPlayer.NetworkID;
+        netObj.Owner = networkID;
 
         
 

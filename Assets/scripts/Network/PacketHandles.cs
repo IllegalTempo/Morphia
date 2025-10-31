@@ -156,7 +156,7 @@ public class PacketHandles_Method
     {
         string itemid = packet.ReadstringUNICODE();
         int whopicked = packet.Readint();
-        NetworkSystem.instance.FindNetworkObject[itemid].GetComponent<item>().PickUpItem(false);
+        NetworkSystem.instance.FindNetworkObject[itemid].GetComponent<item>().PickUpItem(whopicked);
 
 
         PacketSend.Server_Send_DistributePickUpItem(itemid, whopicked);
@@ -168,7 +168,7 @@ public class PacketHandles_Method
         string itemid = packet.ReadstringUNICODE();
         int whopicked = packet.Readint();
 
-        NetworkSystem.instance.FindNetworkObject[itemid].GetComponent<item>().PickUpItem(false);
+        NetworkSystem.instance.FindNetworkObject[itemid].GetComponent<item>().PickUpItem(whopicked);
     }
 
     public static void Client_Handle_StartGame(Connection c, packet packet)
