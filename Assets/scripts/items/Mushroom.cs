@@ -18,6 +18,7 @@ public class Mushroom : item
     {
         base.UnStickEffect();
         
+        Debug.Log($"Unsticking item: {StickingTo?.ItemName} localscale/=scalemultiplier");
         if (StickingTo != null)
         {
             StickingTo.transform.localScale /= scaleMultiplier;

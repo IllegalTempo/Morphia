@@ -23,6 +23,8 @@ public class PacketSend
         StartGame = 8
     ,
         DistributeInitialPos = 9
+    ,
+        Distribute_stickItem = 10
     };
     public static string TestRandomUnicode = "幻想鄉是一個與外界隔絕的神秘之地，其存在自古以來便被視為傳說而流傳。";
     public static Result Server_Send_test(NetworkPlayer pl)
@@ -151,9 +153,7 @@ public class PacketSend
     {
         using (packet p = new packet((int)ServerPackets.DistributeNOInfo))
         {
-
-            // TODO: Write packet data here
-            // p.Write(...);
+;
             p.WriteUNICODE(id);
             p.Write(pos);  
             p.Write(rot);
@@ -167,8 +167,6 @@ public class PacketSend
     {
         using (packet p = new packet((int)ServerPackets.DistributePickUpItem))
         {
-            // TODO: Write packet data here
-            // p.Write(...);
             p.WriteUNICODE(itemid);
             p.Write(PickedUpBy);
             return BroadcastPacket(p);
@@ -190,14 +188,23 @@ public class PacketSend
     {
         using (packet p = new packet((int)ServerPackets.DistributeInitialPos))
         {
-            // TODO: Write packet data here
-            // p.Write(...);
             p.Write(pos);
             p.Write(Rot);
             return target.SendPacket(p);
         }
     }
-//Area for client Packets!
+
+    
+    public static Result Server_Send_Distribute_stickItem(string id,string stickto_id)
+    {
+        using (packet p = new packet((int)ServerPackets.Distribute_stickItem))
+        {
+            p.WriteUNICODE(id);
+            p.WriteUNICODE(stickto_id);
+
+            return BroadcastPacket(p);
+        }
+    }
     public enum ClientPackets
     {
         Test_Packet = 0,
@@ -207,6 +214,8 @@ public class PacketSend
         SendNOInfo = 4
     ,
         PickUpItem = 5
+    ,
+        stickItem = 6
     };
     public static Result Client_Send_AnimationState(float movementx,float movementy)
     {
@@ -261,8 +270,6 @@ public class PacketSend
     {
         using (packet p = new packet((int)ClientPackets.SendNOInfo))
         {
-            // TODO: Write packet data here
-            // p.Write(...);
             p.WriteUNICODE(id);
             p.Write(pos);
             p.Write(rot);
@@ -277,11 +284,22 @@ public class PacketSend
     {
         using (packet p = new packet((int)ClientPackets.PickUpItem))
         {
-            // TODO: Write packet data here
-            // p.Write(...);
             p.WriteUNICODE(objectID);
 
             p.Write(whopicked);
+
+            return SendToServer(p);
+        }
+    }
+
+    
+    public static Result Client_Send_stickItem(string itemId, string otheritemId)
+    {
+        using (packet p = new packet((int)ClientPackets.stickItem))
+        {
+            p.WriteUNICODE(itemId);
+            p.WriteUNICODE(otheritemId);
+
 
             return SendToServer(p);
         }
@@ -290,7 +308,6 @@ private static Result SendToServer(packet p)
     {
         Connection server = NetworkSystem.instance.client.GetServer();
 
-        // Fix: Check for default value instead of null for structs
         if (server.Equals(default(Connection)))
         {
             return Result.ConnectFailed;

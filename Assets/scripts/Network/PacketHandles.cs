@@ -124,8 +124,6 @@ public class PacketHandles_Method
 
     public static void Client_Handle_DistributeNOInfo(Connection c, packet packet)
     {
-        // TODO: Read packet data here
-        // var data = packet.Read...();
         string uuid = packet.ReadstringUNICODE();
         Vector3 pos = packet.Readvector3();
         Quaternion rot = packet.Readquaternion();
@@ -138,8 +136,6 @@ public class PacketHandles_Method
         {
             Debug.LogError($"No Network Object with UUID {uuid} found!");
         }
-
-        // TODO: Handle the packet
     }
 
     public static void Server_Handle_SendNOInfo(NetworkPlayer p, packet packet)
@@ -158,10 +154,6 @@ public class PacketHandles_Method
 
     public static void Server_Handle_PickUpItem(NetworkPlayer p, packet packet)
     {
-        // TODO: Read packet data here
-        // var data = packet.Read...();
-
-        // TODO: Handle the packet
         string itemid = packet.ReadstringUNICODE();
         int whopicked = packet.Readint();
         NetworkSystem.instance.FindNetworkObject[itemid].Owner = whopicked;
@@ -171,37 +163,63 @@ public class PacketHandles_Method
 
     public static void Client_Handle_DistributePickUpItem(Connection c, packet packet)
     {
-        // TODO: Read packet data here
-        // var data = packet.Read...();
         string itemid = packet.ReadstringUNICODE();
         int whopicked = packet.Readint();
 
         NetworkSystem.instance.FindNetworkObject[itemid].Owner = whopicked;
         NetworkSystem.instance.FindNetworkObject[itemid].GetComponent<item>().UnStick();
-        // TODO: Handle the packet
     }
 
     public static void Client_Handle_StartGame(Connection c, packet packet)
     {
-        // TODO: Read packet data here
-        // var data = packet.Read...();
         string scenename = packet.ReadstringUNICODE();
         gamecore.instance.StartGame(scenename);
 
-        // TODO: Handle the packet
     }
 
     public static void Client_Handle_DistributeInitialPos(Connection c, packet packet)
     {
-        // TODO: Read packet data here
-        // var data = packet.Read...();
         Vector3 pos = packet.Readvector3();
         Quaternion rot = packet.Readquaternion();
 
         gamecore.instance.LocalPlayer.transform.position = pos;
         gamecore.instance.LocalPlayer.transform.rotation = rot;
         Debug.Log("Received Initial Pos and Rot");
-        // TODO: Handle the packet
+    }
+
+    public static void Client_Handle_Distribute_stickItem(Connection c, packet packet)
+    {
+        string itemid = packet.ReadstringUNICODE();
+        string targetitemid = packet.ReadstringUNICODE();
+        item itemToStick = NetworkSystem.instance.FindNetworkObject[itemid].GetComponent<item>();
+        item targetItem = NetworkSystem.instance.FindNetworkObject[targetitemid].GetComponent<item>();
+        if (itemToStick != null && targetItem != null)
+        {
+            itemToStick.StickTo(targetItem);
+            Debug.Log($"Item {itemid} stuck to {targetitemid}");
+        }
+        else
+        {
+            Debug.LogError($"Failed to stick items: {itemid} or {targetitemid} not found.");
+        }
+    }
+
+    public static void Server_Handle_stickItem(NetworkPlayer p, packet packet)
+    {
+        string itemid = packet.ReadstringUNICODE();
+        string targetitemid = packet.ReadstringUNICODE();
+        item itemToStick = NetworkSystem.instance.FindNetworkObject[itemid].GetComponent<item>();
+        item targetItem = NetworkSystem.instance.FindNetworkObject[targetitemid].GetComponent<item>();
+        if (itemToStick != null && targetItem != null)
+        {
+            itemToStick.StickTo(targetItem);
+            Debug.Log($"Item {itemid} stuck to {targetitemid} by player {p.SteamName}");
+            PacketSend.Server_Send_Distribute_stickItem(itemid, targetitemid);
+        }
+        else
+        {
+            Debug.LogError($"Failed to stick items: {itemid} or {targetitemid} not found.");
+        }
     }
 }
 

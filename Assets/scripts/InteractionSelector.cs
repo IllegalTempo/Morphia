@@ -36,7 +36,16 @@ public class InteractionSelector : MonoBehaviour
             //If press F this frame
             if (PickingUp_Item != null && Keyboard.current.fKey.wasPressedThisFrame && seenOutline is item)
             {
-                PickingUp_Item.StickTo((item)seenOutline);
+                item seenitem = (item)seenOutline;
+                PickingUp_Item.StickTo(seenitem);
+                if (NetworkSystem.instance.IsServer)
+                {
+                    PacketSend.Server_Send_Distribute_stickItem(PickingUp_Item.netObj.Identifier, seenitem.netObj.Identifier);
+                }
+                else
+                {
+
+                }
             }
 
         }

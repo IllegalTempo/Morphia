@@ -79,6 +79,7 @@ public class item : Selectable
     }
     public void UnStick()
     {
+        Debug.Log($"Unsticking item: {ItemName}");
         netObj.Sync_Position = true;
         netObj.Sync_Rotation = true;
 
@@ -88,12 +89,13 @@ public class item : Selectable
             Physics.IgnoreCollision(itemCollider, StickingTo.itemCollider, false);
         }
 
-        StickingTo = null;
+        UnStickEffect(); // Call before setting StickingTo to null
 
-        UnStickEffect();
+        StickingTo = null;
     }
     private void PickUpItem()
     {
+        Debug.Log($"Picking up item: {ItemName}");
         gameObject.layer = 0;
 
         rb.linearVelocity = Vector3.zero;
@@ -151,7 +153,7 @@ public class item : Selectable
         itemCollider = GetComponent<Collider>();
         rb = GetComponent<Rigidbody>();
         netObj = GetComponent<NetworkObject>();
-        if(!NetworkSystem.instance.IsServer)
+        if (!NetworkSystem.instance.IsServer)
         {
             rb.constraints = RigidbodyConstraints.FreezeAll;
         }
@@ -187,16 +189,17 @@ public class item : Selectable
             outline.enabled = false;
 
         }
-        if(PickedUp)
+        if (PickedUp)
         {
             rb.constraints = RigidbodyConstraints.FreezeAll;
 
-        } else
+        }
+        else
         {
             rb.constraints = RigidbodyConstraints.FreezeRotation;
 
         }
-        if(StickingTo != null)
+        if (StickingTo != null)
         {
             // Calculate distance and direction to stick target
             Vector3 directionToStick = StickingTo.transform.position - transform.position;
