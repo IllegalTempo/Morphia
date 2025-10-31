@@ -40,7 +40,6 @@ public class InteractionSelector : MonoBehaviour
             {
                 item seenitem = (item)seenOutline;
 
-                PickingUp_Item.StickTo(seenitem);
                 if (NetworkSystem.instance.IsServer)
                 {
                     PacketSend.Server_Send_Distribute_stickItem(PickingUp_Item.netObj.Identifier, seenitem.netObj.Identifier);
@@ -49,6 +48,8 @@ public class InteractionSelector : MonoBehaviour
                 {
                     PacketSend.Client_Send_stickItem(PickingUp_Item.netObj.Identifier, seenitem.netObj.Identifier);
                 }
+                PickingUp_Item.StickTo(seenitem);
+
             }
 
         }
