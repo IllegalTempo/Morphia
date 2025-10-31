@@ -50,14 +50,11 @@ public class InteractionSelector : MonoBehaviour
                     PacketSend.Client_Send_stickItem(PickingUp_Item.netObj.Identifier, seenitem.netObj.Identifier);
                 }
             }
-                catch (Exception e)
-                {
-                Debug.LogError($"Failed to send stick item packet: {e.Message}");
-            }
+
         }
 
     }
 
 
-}
+
 }
