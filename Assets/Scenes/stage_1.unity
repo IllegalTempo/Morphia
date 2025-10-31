@@ -16186,6 +16186,8 @@ MonoBehaviour:
   followCameraRotation: 0
   StickingTo: {fileID: 0}
   netObj: {fileID: 1330723399}
+  maxStickForce: 10
+  minStickDistance: 0.5
 --- !u!65 &1330723397
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -19429,6 +19431,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Mushroom_01
       objectReference: {fileID: 0}
+    - target: {fileID: 4385080170328260021, guid: ff62b58c5a9ea164fa8ddf8038e10cd1, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8373805728737738159, guid: ff62b58c5a9ea164fa8ddf8038e10cd1, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8668046474177936419, guid: ff62b58c5a9ea164fa8ddf8038e10cd1, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -19481,6 +19495,8 @@ MonoBehaviour:
   followCameraRotation: 0
   StickingTo: {fileID: 0}
   netObj: {fileID: 2037716234}
+  maxStickForce: 10
+  minStickDistance: 0.5
 --- !u!114 &2037716233
 MonoBehaviour:
   m_ObjectHideFlags: 0

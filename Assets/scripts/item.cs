@@ -15,6 +15,10 @@ public class item : Selectable
     public item StickingTo;
     Rigidbody rb;
     public NetworkObject netObj;
+    
+    [Header("Stick Settings")]
+    public float maxStickForce = 10f; // Maximum force when far away
+    public float minStickDistance = 0.5f; // Distance at which force becomes zero
 
     private bool PickedUp
     {
@@ -81,6 +85,7 @@ public class item : Selectable
         rb.linearVelocity = Vector3.zero;
         gamecore.instance.LocalPlayer.playerMovement.OnPickUpItem(this);
         gamecore.instance.I_interactionSelector.PickingUp_Item = this;
+        StickingTo = null;
         outline.OutlineColor = Color.aquamarine;
         LookedAt = true;
         // Get collider in itself or children and disable it
@@ -178,10 +183,17 @@ public class item : Selectable
         }
         if(StickingTo != null)
         {
-            // add force toward stickingto position
-            Vector3 directionToStick = (StickingTo.transform.position - transform.position).normalized;
-            rb.AddForce(directionToStick * 10f);
-
+            // Calculate distance and direction to stick target
+            Vector3 directionToStick = StickingTo.transform.position - transform.position;
+            float distance = directionToStick.magnitude;
+            
+            // Scale force based on distance - force is 0 at minStickDistance and maxStickForce when far away
+            if (distance > minStickDistance)
+            {
+                float normalizedDistance = (distance - minStickDistance);
+                float force = Mathf.Min(normalizedDistance * maxStickForce, maxStickForce);
+                rb.AddForce(directionToStick.normalized * force);
+            }
         }
         DuringStickEffect();
 
