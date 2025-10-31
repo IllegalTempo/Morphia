@@ -34,6 +34,8 @@ public class GameServer : SocketManager
             { (int)PacketSend.ClientPackets.PickUpItem, PacketHandles_Method.Server_Handle_PickUpItem }
         ,
             { (int)PacketSend.ClientPackets.stickItem, PacketHandles_Method.Server_Handle_stickItem }
+        ,
+            { (int)PacketSend.ClientPackets.drop, PacketHandles_Method.Server_Handle_drop }
         };
 
 

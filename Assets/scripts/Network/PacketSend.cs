@@ -25,6 +25,8 @@ public class PacketSend
         DistributeInitialPos = 9
     ,
         Distribute_stickItem = 10
+    ,
+        DistributeDrop = 11
     };
     public static string TestRandomUnicode = "幻想鄉是一個與外界隔絕的神秘之地，其存在自古以來便被視為傳說而流傳。";
     public static Result Server_Send_test(NetworkPlayer pl)
@@ -172,8 +174,16 @@ public class PacketSend
             return BroadcastPacket(p);
         }
     }
+    public static Result Server_Send_DistributeDrop(string itemid)
+    {
+        using (packet p = new packet((int)ServerPackets.DistributeDrop))
+        {
+            p.WriteUNICODE(itemid);
+            return BroadcastPacket(p);
+        }
+    }
 
-    
+
     public static Result Server_Send_StartGame(string scenename)
     {
         using (packet p = new packet((int)ServerPackets.StartGame))
@@ -216,6 +226,8 @@ public class PacketSend
         PickUpItem = 5
     ,
         stickItem = 6
+    ,
+        drop = 7
     };
     public static Result Client_Send_AnimationState(float movementx,float movementy)
     {
@@ -301,6 +313,16 @@ public class PacketSend
             p.WriteUNICODE(otheritemId);
 
 
+            return SendToServer(p);
+        }
+    }
+
+    
+    public static Result Client_Send_drop(string objectID)
+    {
+        using (packet p = new packet((int)ClientPackets.drop))
+        {
+            p.WriteUNICODE(objectID);
             return SendToServer(p);
         }
     }

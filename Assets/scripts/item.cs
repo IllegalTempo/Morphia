@@ -44,12 +44,28 @@ public class item : Selectable
             if (!gamecore.instance.IsLocal(netObj.Owner)) return;
 
             // Item is in inventory, so drop it
-            Drop(transform.position);
+            Drop(transform.position,true);
+            if (NetworkSystem.instance.IsServer)
+            {
+                PacketSend.Server_Send_DistributeDrop(netObj.Identifier);
+            }
+            else
+            {
+                PacketSend.Client_Send_PickUpItem(netObj.Identifier, -1);
+            }
         }
         else
         {
             // Item is not in inventory, so pick it up
-            PickUpItem();
+            PickUpItem(true);
+            if (NetworkSystem.instance.IsServer)
+            {
+                PacketSend.Server_Send_DistributePickUpItem(netObj.Identifier, netObj.Owner);
+            }
+            else
+            {
+                PacketSend.Client_Send_PickUpItem(netObj.Identifier, netObj.Owner);
+            }
         }
     }
     public virtual void StickEffect()
@@ -66,7 +82,7 @@ public class item : Selectable
     {
         netObj.Sync_Position = false;
         netObj.Sync_Rotation = false;
-        Drop(transform.position);
+        Drop(transform.position,true);
         StickingTo = other;
 
         // Ignore collision between this item and the item it's sticking to
@@ -93,14 +109,18 @@ public class item : Selectable
 
         StickingTo = null;
     }
-    private void PickUpItem()
+    public void PickUpItem(bool local)
     {
         Debug.Log($"Picking up item: {ItemName}");
         gameObject.layer = 0;
 
+        if(local)
+        {
+            gamecore.instance.LocalPlayer.playerMovement.OnPickUpItem(this);
+            gamecore.instance.I_interactionSelector.PickingUp_Item = this;
+        }
         rb.linearVelocity = Vector3.zero;
-        gamecore.instance.LocalPlayer.playerMovement.OnPickUpItem(this);
-        gamecore.instance.I_interactionSelector.PickingUp_Item = this;
+        
         UnStick();
         outline.OutlineColor = Color.aquamarine;
         LookedAt = true;
@@ -111,24 +131,21 @@ public class item : Selectable
         }
         netObj.Owner = gamecore.instance.LocalPlayer.NetworkID;
 
-        if (NetworkSystem.instance.IsServer)
-        {
-            PacketSend.Server_Send_DistributePickUpItem(netObj.Identifier, netObj.Owner);
-        }
-        else
-        {
-            PacketSend.Client_Send_PickUpItem(netObj.Identifier, netObj.Owner);
-        }
+        
 
     }
-    public void Drop(Vector3 dropPosition)
+    public void Drop(Vector3 dropPosition,bool local)
     {
 
         gameObject.layer = 6;
 
         // Remove from inventory
-        gamecore.instance.LocalPlayer.playerMovement.OnDropItem(this);
-        gamecore.instance.I_interactionSelector.PickingUp_Item = null;
+        if(local)
+        {
+            gamecore.instance.LocalPlayer.playerMovement.OnDropItem(this);
+            gamecore.instance.I_interactionSelector.PickingUp_Item = null;
+        }
+        
         outline.OutlineColor = Color.white;
 
         this.transform.position = dropPosition;
@@ -136,14 +153,7 @@ public class item : Selectable
         itemCollider.enabled = true;
         netObj.Owner = -1;
 
-        if (NetworkSystem.instance.IsServer)
-        {
-            PacketSend.Server_Send_DistributePickUpItem(netObj.Identifier, -1);
-        }
-        else
-        {
-            PacketSend.Client_Send_PickUpItem(netObj.Identifier, -1);
-        }
+        
 
     }
 

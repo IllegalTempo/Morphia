@@ -156,8 +156,7 @@ public class PacketHandles_Method
     {
         string itemid = packet.ReadstringUNICODE();
         int whopicked = packet.Readint();
-        NetworkSystem.instance.FindNetworkObject[itemid].Owner = whopicked;
-        NetworkSystem.instance.FindNetworkObject[itemid].GetComponent<item>().UnStick();
+        NetworkSystem.instance.FindNetworkObject[itemid].GetComponent<item>().PickUpItem(false);
 
 
         PacketSend.Server_Send_DistributePickUpItem(itemid, whopicked);
@@ -169,8 +168,7 @@ public class PacketHandles_Method
         string itemid = packet.ReadstringUNICODE();
         int whopicked = packet.Readint();
 
-        NetworkSystem.instance.FindNetworkObject[itemid].Owner = whopicked;
-        NetworkSystem.instance.FindNetworkObject[itemid].GetComponent<item>().UnStick();
+        NetworkSystem.instance.FindNetworkObject[itemid].GetComponent<item>().PickUpItem(false);
     }
 
     public static void Client_Handle_StartGame(Connection c, packet packet)
@@ -222,6 +220,38 @@ public class PacketHandles_Method
         else
         {
             Debug.LogError($"Failed to stick items: {itemid} or {targetitemid} not found.");
+        }
+    }
+
+	public static void Server_Handle_drop(NetworkPlayer p, packet packet)
+	{
+        string itemid = packet.ReadstringUNICODE();
+        item itemToDrop = NetworkSystem.instance.FindNetworkObject[itemid].GetComponent<item>();
+        if (itemToDrop != null)
+        {
+            itemToDrop.Drop(itemToDrop.transform.position,false);
+            Debug.Log($"Item {itemid} dropped by player {p.SteamName}");
+            PacketSend.Server_Send_DistributeDrop(itemid);
+        }
+        else
+        {
+            Debug.LogError($"Failed to drop item: {itemid} not found.");
+        }
+    }
+
+	public static void Client_Handle_DistributeDrop(Connection c, packet packet)
+	{
+        string itemid = packet.ReadstringUNICODE();
+        item itemToDrop = NetworkSystem.instance.FindNetworkObject[itemid].GetComponent<item>();
+        if (itemToDrop != null)
+        {
+            itemToDrop.Drop(itemToDrop.transform.position,false);
+
+            Debug.Log($"Item {itemid} dropped.");
+        }
+        else
+        {
+            Debug.LogError($"Failed to drop item: {itemid} not found.");
         }
     }
 }

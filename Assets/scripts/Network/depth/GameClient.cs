@@ -32,6 +32,9 @@ public class GameClient : ConnectionManager
             { (int)PacketSend.ServerPackets.DistributeInitialPos, PacketHandles_Method.Client_Handle_DistributeInitialPos }
         ,
             { (int)PacketSend.ServerPackets.Distribute_stickItem, PacketHandles_Method.Client_Handle_Distribute_stickItem }
+        
+            ,
+            { (int)PacketSend.ServerPackets.DistributeDrop, PacketHandles_Method.Client_Handle_DistributeDrop }
         };
 
 
