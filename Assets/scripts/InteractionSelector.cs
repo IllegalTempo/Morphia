@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem; // Use the new Input System
+using System;
 
 public class InteractionSelector : MonoBehaviour
 {
@@ -11,7 +12,8 @@ public class InteractionSelector : MonoBehaviour
         if (!GetComponent<NetworkPlayerObject>().IsLocal)
         {
             Destroy(this);
-        } else
+        }
+        else
         {
             movement = GetComponent<PlayerMovement>();
 
@@ -37,6 +39,7 @@ public class InteractionSelector : MonoBehaviour
             if (PickingUp_Item != null && Keyboard.current.fKey.wasPressedThisFrame && seenOutline is item)
             {
                 item seenitem = (item)seenOutline;
+
                 PickingUp_Item.StickTo(seenitem);
                 if (NetworkSystem.instance.IsServer)
                 {
@@ -45,12 +48,16 @@ public class InteractionSelector : MonoBehaviour
                 else
                 {
                     PacketSend.Client_Send_stickItem(PickingUp_Item.netObj.Identifier, seenitem.netObj.Identifier);
-
                 }
             }
-
+                catch (Exception e)
+                {
+                Debug.LogError($"Failed to send stick item packet: {e.Message}");
+            }
         }
 
-        
     }
+
+
+}
 }
