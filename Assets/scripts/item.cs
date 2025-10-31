@@ -68,22 +68,34 @@ public class item : Selectable
         netObj.Sync_Rotation = false;
         Drop(transform.position);
         StickingTo = other;
-        itemCollider.enabled = false;
+
+        // Ignore collision between this item and the item it's sticking to
+        if (itemCollider != null && other.itemCollider != null)
+        {
+            Physics.IgnoreCollision(itemCollider, other.itemCollider, true);
+        }
+
         StickEffect();
     }
     public void UnStick()
     {
         netObj.Sync_Position = true;
         netObj.Sync_Rotation = true;
+
+        // Re-enable collision between this item and the item it was sticking to
+        if (StickingTo != null && itemCollider != null && StickingTo.itemCollider != null)
+        {
+            Physics.IgnoreCollision(itemCollider, StickingTo.itemCollider, false);
+        }
+
         StickingTo = null;
-        itemCollider.enabled = true;
 
         UnStickEffect();
     }
     private void PickUpItem()
     {
         gameObject.layer = 0;
-        
+
         rb.linearVelocity = Vector3.zero;
         gamecore.instance.LocalPlayer.playerMovement.OnPickUpItem(this);
         gamecore.instance.I_interactionSelector.PickingUp_Item = this;
@@ -159,7 +171,7 @@ public class item : Selectable
             outline.OutlineWidth = 5f;
 
         }
-        
+
         if (LookedAt)
         {
 
@@ -189,7 +201,7 @@ public class item : Selectable
             // Calculate distance and direction to stick target
             Vector3 directionToStick = StickingTo.transform.position - transform.position;
             float distance = directionToStick.magnitude;
-            
+
             // Scale force based on distance - force is 0 at minStickDistance and maxStickForce when far away
             if (distance > minStickDistance)
             {

@@ -177,7 +177,7 @@ public class PacketHandles_Method
         int whopicked = packet.Readint();
 
         NetworkSystem.instance.FindNetworkObject[itemid].Owner = whopicked;
-
+        NetworkSystem.instance.FindNetworkObject[itemid].GetComponent<item>().UnStick();
         // TODO: Handle the packet
     }
 
