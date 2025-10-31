@@ -44,6 +44,7 @@ public class InteractionSelector : MonoBehaviour
                 }
                 else
                 {
+                    PacketSend.Client_Send_stickItem(PickingUp_Item.netObj.Identifier, seenitem.netObj.Identifier);
 
                 }
             }
