@@ -219,9 +219,9 @@ public class gamecore : MonoBehaviour
         {
             foreach (npc npc in sd.npcs)
             {
-                if (save.instance.FindNPC.ContainsKey(npc.NpcName))
+                if (save.instance.FindNPC.ContainsKey(npc.gameObject.name))
                 {
-                    npc savednpc = save.instance.FindNPC[npc.NpcName];
+                    npc savednpc = save.instance.FindNPC[npc.gameObject.name];
                     npc.Conversations = savednpc.Conversations;
 
                 }

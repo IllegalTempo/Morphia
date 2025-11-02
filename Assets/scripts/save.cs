@@ -72,12 +72,42 @@ public class save
             Debug.LogError("Failed to save game: " + e.Message);
         }
     }
+
     public void NewSave(string saveName)
     {
         CurrentSaveName = saveName;
         ItemData = new List<ItemDataEntry>();
         CurrentStage = "intro";
+        npcs = new List<npc> 
+        { 
+            new npc 
+            { 
+                NpcName = "priest", 
+                Conversations = new List<string> 
+                { 
+                    "priest_1",
+                } 
+            },
+            new npc
+            {
+                NpcName = "farmer",
+                Conversations = new List<string>
+                {
+                    "investigation_1",
+                }
+            },
+            new npc
+            {
+                NpcName = "blacksmith",
+                Conversations = new List<string>
+                {
+                    "blacksmith_1",
+                }
+            }
+
+        };
         SaveToFile(GetSavePath(saveName));
+
     }
     public void ParseDict()
     {
@@ -158,7 +188,7 @@ public class save
             {
                 foreach (var conv in n.Conversations)
                 {
-                    Debug.Log($"  Conversation: key={conv.conversationKey}, dialogues={conv.Dialogues?.Length}");
+                    Debug.Log($"  Conversation: key={conv}, dialogues={conv?.Length}");
                 }
             }
         }
