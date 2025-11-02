@@ -4212,10 +4212,10 @@ MonoBehaviour:
   LoadingText: {fileID: 327533731}
   DialogueUI: {fileID: 432286516}
   DialogueText: {fileID: 2055439629}
-  dialogueCameraDistance: 3
-  dialogueCameraHeight: 1.5
+  dialogueCameraDistance: 7
+  dialogueCameraHeight: 0
   dialogueCameraTransitionSpeed: 2
-  dialogueCharacterOffset: {x: -2, y: 0.5}
+  dialogueCharacterOffset: {x: -2, y: 0.42}
   I_interactionSelector: {fileID: 0}
   ItemNameTagPrefab: {fileID: 3066324524666043216, guid: 601fdd69f6fe2ab47a0d505cb9094fe7, type: 3}
   LocalPlayer: {fileID: 0}

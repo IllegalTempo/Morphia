@@ -80,7 +80,7 @@ public class NetworkSystem : MonoBehaviour
         p.gameObject.GetComponent<PlayerMovement>().OnInitialized(networkid);
         p.steamID = steamid;
         p.IsLocal = isLocal;
-        p.gameObject.name = "Player" + networkid;
+        p.gameObject.name = "Player" + (networkid+1);
         //p2 material
         if(networkid == 1)
         {

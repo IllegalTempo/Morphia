@@ -72,6 +72,9 @@ public class gamecore : MonoBehaviour
                 EndDialogue();
             }
         }
+        
+
+
     }
     
     public void AddConversation(string conversationKey)
@@ -115,7 +118,7 @@ public class gamecore : MonoBehaviour
         DialogueUI.SetActive(true);
 
         // Set dialogue text
-        DialogueText.text = dialogue.DialogueText;
+        DialogueText.text = "[" + dialogue.CharacterName + "]" + dialogue.DialogueText;
 
         // Position camera in front of character
         if (LocalPlayer != null && LocalPlayer.playerMovement != null && LocalPlayer.playerMovement.playerCamera != null)
@@ -145,7 +148,7 @@ public class gamecore : MonoBehaviour
         Camera camera = playerMovement.playerCamera;
         
         // Calculate target position: in front of the character, facing towards them
-        Vector3 characterForward = characterTransform.forward;
+        Vector3 characterForward = -characterTransform.forward;
         Vector3 targetPosition = characterTransform.position 
                                 - characterForward * dialogueCameraDistance // In front of character
                                 + Vector3.up * dialogueCameraHeight; // At appropriate height
@@ -365,7 +368,7 @@ public class gamecore : MonoBehaviour
 
         SceneData sd = GameObject.Find("SceneCore").GetComponent<SceneData>();
 
-        if (NetworkSystem.instance.IsServer)
+        if (NetworkSystem.instance.IsServer && scene.name != "mainscreen")
         {
             LocalPlayer.playerMovement.transform.position = sd.Spawnpoint[0].position;
             foreach (KeyValuePair<ulong, NetworkPlayer> player in NetworkSystem.instance.server.players)

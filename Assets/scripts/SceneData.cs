@@ -17,6 +17,7 @@ public class SceneData : MonoBehaviour
     private void Awake()
     {
         gamecore.instance.CurrentStage = this;
+
     }
 
 }
