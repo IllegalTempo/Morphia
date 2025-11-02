@@ -349,10 +349,10 @@ public class gamecore : MonoBehaviour
         {
             foreach (npc npc in sd.npcs)
             {
-                if (save.instance.FindNPC.ContainsKey(npc.gameObject.name))
+                if (save.instance.FindNPC.ContainsKey(npc.NpcName))
                 {
-                    npc savednpc = save.instance.FindNPC[npc.gameObject.name];
-                    npc.Conversations = savednpc.Conversations;
+                    NpcSaveData savedNpc = save.instance.FindNPC[npc.NpcName];
+                    savedNpc.ApplyToNpc(npc);
                 }
             }
         }
@@ -380,8 +380,12 @@ public class gamecore : MonoBehaviour
         if (sd.IsLobby) return;
         LocalPlayer.playerMovement.InGameSetup();
 
-        ToSave();
-        SetUpScene(sd);
+        if(NetworkSystem.instance.IsServer)
+        {
+            ToSave();
+            SetUpScene(sd);
+        }
+        
     }
     
     public IEnumerator Client_UseSave(string scenename)
@@ -472,7 +476,7 @@ public class gamecore : MonoBehaviour
         {
             foreach (npc npc in CurrentStage.npcs)
             {
-                save.instance.FindNPC[npc.NpcName] = npc;
+                save.instance.FindNPC[npc.NpcName] = new NpcSaveData(npc);
             }
         }
 

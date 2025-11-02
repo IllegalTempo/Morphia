@@ -9,9 +9,9 @@ using UnityEngine;
 public class save
 {
     public List<ItemDataEntry> ItemData = new List<ItemDataEntry>();
-    public List<npc> npcs = new List<npc>();
+    public List<NpcSaveData> npcs = new List<NpcSaveData>();
     public Dictionary<ItemIdentifier,SaveInfo_Item> FindSavedItem = new Dictionary<ItemIdentifier, SaveInfo_Item>();
-    public Dictionary<string,npc> FindNPC = new Dictionary<string, npc>();
+    public Dictionary<string,NpcSaveData> FindNPC = new Dictionary<string, NpcSaveData>();
     public string CurrentStage = "";
     public string CurrentSaveName = "";
     public static save instance = new save();
@@ -93,7 +93,7 @@ public class save
             };
             ItemData.Add(entry);
         }
-        npcs = new List<npc>(FindNPC.Values);
+        npcs = new List<NpcSaveData>(FindNPC.Values);
 
     }
     private void ParseList()
@@ -102,7 +102,7 @@ public class save
         {
             FindSavedItem[item.identifier] = item.itemInfo;
         }
-        foreach (npc npc in npcs)
+        foreach (NpcSaveData npc in npcs)
         {
             FindNPC[npc.NpcName] = npc;
         }
@@ -250,6 +250,31 @@ public class SaveInfo_Item
         position = pos;
         rotation = rot;
         Parented_To_Player = parented_to_player;
+    }
+}
+[Serializable]
+public class NpcSaveData
+{
+    public string NpcName;
+    public List<string> Conversations = new List<string>();
+    
+    // Constructor to create from npc MonoBehaviour
+    public NpcSaveData(npc npc)
+    {
+        NpcName = npc.NpcName;
+        Conversations = new List<string>(npc.Conversations);
+    }
+    
+    // Empty constructor for deserialization
+    public NpcSaveData()
+    {
+    }
+    
+    // Apply this data to an npc MonoBehaviour
+    public void ApplyToNpc(npc npc)
+    {
+        npc.NpcName = NpcName;
+        npc.Conversations = new List<string>(Conversations);
     }
 }
 

@@ -16,8 +16,16 @@ public class SceneData : MonoBehaviour
     }
     private void Awake()
     {
+        if (stage == "mainscreen") return;
         gamecore.instance.CurrentStage = this;
 
+    }
+    private void Start()
+    {
+        if (stage == "mainscreen")
+        {
+            gamecore.instance.CurrentStage = this;
+        }
     }
 
 }
