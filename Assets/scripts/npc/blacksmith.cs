@@ -5,8 +5,8 @@ public class blacksmith : npc
     public override void OnClicked()
     {
         base.OnClicked();
-        gamecore.instance.AddConversation("blacksmith_1");
-        gamecore.instance.PlayNextDialogue();
+        EnterConversation(0);
+
 
         // Additional blacksmith-specific interaction logic can be added here
     }

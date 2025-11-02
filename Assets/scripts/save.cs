@@ -78,34 +78,6 @@ public class save
         CurrentSaveName = saveName;
         ItemData = new List<ItemDataEntry>();
         CurrentStage = "intro";
-        npcs = new List<npc> 
-        { 
-            new npc 
-            { 
-                NpcName = "priest", 
-                Conversations = new List<string> 
-                { 
-                    "priest_1",
-                } 
-            },
-            new npc
-            {
-                NpcName = "farmer",
-                Conversations = new List<string>
-                {
-                    "investigation_1",
-                }
-            },
-            new npc
-            {
-                NpcName = "blacksmith",
-                Conversations = new List<string>
-                {
-                    "blacksmith_1",
-                }
-            }
-
-        };
         SaveToFile(GetSavePath(saveName));
 
     }

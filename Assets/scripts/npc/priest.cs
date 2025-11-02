@@ -4,9 +4,9 @@ public class priest : npc
 {
     public override void OnClicked()
     {
-        base.OnClicked();
-        gamecore.instance.AddConversation("priest_1");
-        gamecore.instance.PlayNextDialogue();
+        base.OnClicked(); 
+        EnterConversation(0);
+
 
         // Additional priest-specific interaction logic can be added here
     }

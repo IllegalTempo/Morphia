@@ -21,11 +21,15 @@ public class gamecore : MonoBehaviour
     [Header("UI/Dialogue")]
     public GameObject DialogueUI;
     public TMP_Text DialogueText;
-
+    [Header("Dialogue Camera Settings")]
+    public float dialogueCameraDistance = 3f; // Distance from character
+    public float dialogueCameraHeight = 1.5f; // Height offset from character position
+    public float dialogueCameraTransitionSpeed = 2f; // Speed of camera movement
+    public Vector2 dialogueCharacterOffset = new Vector2(-2f, 0.5f); // Screen offset for character during dialogue
 
     public InteractionSelector I_interactionSelector;
 
-
+    public GameObject ItemNameTagPrefab;
     public NetworkPlayerObject LocalPlayer;
     public bool InLobby = true;
     public bool InDialogue = false;
@@ -37,31 +41,60 @@ public class gamecore : MonoBehaviour
     public string SelectedSaveName = "";
     public Dictionary<string, conversation> GetConversation = new Dictionary<string, conversation>();
     public List<dialogue> CurrentPlayingConversation;
+    
+    // Store original camera state for restoration after dialogue
+    private Vector3 preCameraPosition;
+    private Quaternion preCameraRotation;
+    private float preRotationX;
+    private float preRotationY;
+    private Coroutine currentDialogueCameraCoroutine;
 
     public bool IsLocal(int id)
     {
         return LocalPlayer != null && LocalPlayer.NetworkID == id;
     }
+    
     private void Update()
     {
-
+        // Handle dialogue progression with Enter key
+        if (InDialogue && Input.GetKeyDown(KeyCode.Return))
+        {
+            if (CurrentPlayingConversation.Count > 0)
+            {
+                PlayNextDialogue();
+            }
+            else
+            {
+                EndDialogue();
+            }
+        }
     }
+    
     public void AddConversation(string conversationKey)
     {
         CurrentPlayingConversation.AddRange(GetConversation[conversationKey].Dialogues);
     }
+    
     public void StartGame(string savename)
     {
         MainScreenUI.instance.animator.Play("mainmenu_prestart");
         MainScreenUI.instance.StatusDisplay.text = "Starting in 5 seconds...";
-        Debug.Log("StartGame " + savename);
 
         //Wait 5 seconds 
         StartCoroutine(WaitAndStartGame(savename));
     }
+    
     public void PlayNextDialogue()
     {
+        if (CurrentPlayingConversation.Count == 0)
+        {
+            Debug.LogWarning("No dialogue to play!");
+            EndDialogue();
+            return;
+        }
+
         dialogue dialogue = CurrentPlayingConversation[0];
+        
         // Find the character GameObject by name
         GameObject character = GameObject.Find(dialogue.CharacterName);
 
@@ -80,25 +113,93 @@ public class gamecore : MonoBehaviour
         // Set dialogue text
         DialogueText.text = dialogue.DialogueText;
 
-        // Make camera follow the character
+        // Position camera in front of character
         if (LocalPlayer != null && LocalPlayer.playerMovement != null && LocalPlayer.playerMovement.playerCamera != null)
         {
-            // Calculate direction from player to character
-            Vector3 directionToCharacter = (character.transform.position - LocalPlayer.transform.position).normalized;
-
-            // Calculate desired camera rotation to look at character
-            directionToCharacter.y = 0; // Keep on horizontal plane
-
-            if (directionToCharacter != Vector3.zero)
+            // Stop any existing camera transition
+            if (currentDialogueCameraCoroutine != null)
             {
-                Quaternion targetRotation = Quaternion.LookRotation(directionToCharacter);
-
-                // Apply rotation to camera (you may want to smooth this with a coroutine)
-                LocalPlayer.playerMovement.playerCamera.transform.rotation = targetRotation;
+                StopCoroutine(currentDialogueCameraCoroutine);
             }
+            
+            // Start smooth camera transition
+            currentDialogueCameraCoroutine = StartCoroutine(TransitionCameraToDialoguePosition(character.transform));
+            
+            // Set character screen offset for dialogue view
+            LocalPlayer.playerMovement.SetCharacterScreenOffset(dialogueCharacterOffset);
         }
+        
         CurrentPlayingConversation.RemoveAt(0);
     }
+    
+    /// <summary>
+    /// Smoothly transitions the camera to face the speaking character from the front
+    /// </summary>
+    private IEnumerator TransitionCameraToDialoguePosition(Transform characterTransform)
+    {
+        PlayerMovement playerMovement = LocalPlayer.playerMovement;
+        Camera camera = playerMovement.playerCamera;
+        
+        // Calculate target position: in front of the character, facing towards them
+        Vector3 characterForward = characterTransform.forward;
+        Vector3 targetPosition = characterTransform.position 
+                                - characterForward * dialogueCameraDistance // In front of character
+                                + Vector3.up * dialogueCameraHeight; // At appropriate height
+        
+        // Calculate target rotation: looking at the character
+        Vector3 lookDirection = (characterTransform.position + Vector3.up * dialogueCameraHeight) - targetPosition;
+        Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
+        
+        // Get start position and rotation
+        Vector3 startPosition = camera.transform.position;
+        Quaternion startRotation = camera.transform.rotation;
+        
+        float elapsed = 0f;
+        float duration = 1f / dialogueCameraTransitionSpeed;
+        
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.SmoothStep(0f, 1f, elapsed / duration);
+            
+            // Smoothly interpolate position and rotation
+            camera.transform.position = Vector3.Lerp(startPosition, targetPosition, t);
+            camera.transform.rotation = Quaternion.Slerp(startRotation, targetRotation, t);
+            
+            yield return null;
+        }
+        
+        // Ensure final position is exact
+        camera.transform.position = targetPosition;
+        camera.transform.rotation = targetRotation;
+        
+        currentDialogueCameraCoroutine = null;
+    }
+    
+    /// <summary>
+    /// Ends the dialogue and restores player control
+    /// </summary>
+    public void EndDialogue()
+    {
+        InDialogue = false;
+        DialogueUI.SetActive(false);
+        
+        // Stop camera transition if still running
+        if (currentDialogueCameraCoroutine != null)
+        {
+            StopCoroutine(currentDialogueCameraCoroutine);
+            currentDialogueCameraCoroutine = null;
+        }
+        
+        // Reset character screen offset
+        if (LocalPlayer != null && LocalPlayer.playerMovement != null)
+        {
+            LocalPlayer.playerMovement.SetCharacterScreenOffset(Vector2.zero);
+        }
+        
+        Debug.Log("Dialogue ended");
+    }
+
     private void LoadConversation(string scenename)
     {
         try
@@ -134,18 +235,16 @@ public class gamecore : MonoBehaviour
             Debug.LogError("Failed to load conversations: " + e.Message);
         }
     }
+    
     public void Server_OnSecondPlayerJoined(NetworkPlayer p)
     {
         MainScreenUI.instance.StatusDisplay.text = p.SteamName + " Has Joined!";
-        Debug.Log("Second Player Joined: " + p.SteamName + SelectedSaveName);
         save.instance.LoadFromFile(SelectedSaveName);
 
         StartGame(SelectedSaveName);
         PacketSend.Server_Send_StartGame(save.instance.CurrentStage);
-
-
-
     }
+    
     private IEnumerator WaitAndStartGame(string savename)
     {
         yield return new WaitForSeconds(5f);
@@ -160,6 +259,7 @@ public class gamecore : MonoBehaviour
             NetworkListener.Server_OnPlayerJoinSuccessful -= Server_OnSecondPlayerJoined;
         }
     }
+    
     private void Awake()
     {
         //singleton pattern
@@ -176,22 +276,24 @@ public class gamecore : MonoBehaviour
         Shader.SetGlobalColor("_ShadeColor", ShadeColor);
         SceneManager.sceneLoaded += OnSceneLoad;
         NetworkListener.Server_OnPlayerJoinSuccessful += Server_OnSecondPlayerJoined;
-
-
     }
+    
     private void Start()
     {
         LoadingScreen.SetActive(false);
         DialogueUI.SetActive(false);
     }
+    
     private void OnDestroy()
     {
         SceneManager.sceneLoaded -= OnSceneLoad;
     }
+    
     public void StartDialogue(string DialogueKey)
     {
 
     }
+    
     private void SetUpScene(SceneData sd)
     {
 
@@ -204,8 +306,6 @@ public class gamecore : MonoBehaviour
                 item.transform.position = savedItem.position;
                 item.transform.rotation = savedItem.rotation;
                 item.netObj.Owner = savedItem.Parented_To_Player;
-
-
             }
         }
 
@@ -213,7 +313,6 @@ public class gamecore : MonoBehaviour
         if (sd.npcs == null)
         {
             Debug.LogWarning("SceneData NPCs is null!");
-
         }
         else
         {
@@ -223,19 +322,15 @@ public class gamecore : MonoBehaviour
                 {
                     npc savednpc = save.instance.FindNPC[npc.gameObject.name];
                     npc.Conversations = savednpc.Conversations;
-
                 }
             }
         }
 
-
         SaveLoaded = true;
     }
+    
     public void OnSceneLoad(UnityEngine.SceneManagement.Scene scene, LoadSceneMode mode)
     {
-
-
-        Debug.Log("Scene Loaded: " + scene.name);
         LoadConversation(scene.name);
 
         LoadingScreen.SetActive(false);
@@ -256,31 +351,27 @@ public class gamecore : MonoBehaviour
 
         ToSave();
         SetUpScene(sd);
-
-
-
     }
+    
     public IEnumerator Client_UseSave(string scenename)
     {
         yield return StartCoroutine(LoadScene(scenename));
-
     }
+    
     public IEnumerator UseSave(string savename) //Use it when all players is in lobby!
     {
-        Debug.Log("Server using save " + savename + "Stage:" + save.instance.CurrentStage);
-
         yield return StartCoroutine(LoadScene(save.instance.CurrentStage));
-
     }
+    
     public void StartLoading(string loadingtext)
     {
         LoadingScreen.SetActive(true);
         LoadingText.text = loadingtext;
         LoadingProgress.value = 0f;
     }
+    
     public IEnumerator LoadScene(string scenename)
     {
-
         StartLoading("Loading Scene: " + scenename);
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(scenename);
 
@@ -296,15 +387,13 @@ public class gamecore : MonoBehaviour
 
             yield return null; // Wait for next frame
         }
-
-
     }
+    
     public void AddMission(string MissionTitle, string MissionDescription)
     {
         Instantiate(SingleMissionInstance, MissionParent).GetComponent<SingleMissionControll>().SetMission(MissionTitle, MissionDescription);
-
-
     }
+    
     public void ToSave()
     {
         if (CurrentStage == null)
@@ -318,11 +407,9 @@ public class gamecore : MonoBehaviour
 
         // Save player positions and rotations
 
-
         if (CurrentStage.items == null)
         {
             Debug.LogWarning("Cannot save items: CurrentStage.items is null");
-
         }
         else
         {
@@ -346,7 +433,6 @@ public class gamecore : MonoBehaviour
         }
         // Save all items in the current stage
 
-
         if (CurrentStage.npcs == null)
         {
             Debug.LogWarning("Cannot save NPCs: CurrentStage.npcs is null");
@@ -364,5 +450,4 @@ public class gamecore : MonoBehaviour
 
         Debug.Log($"Game state parsed to save object. Stage: {CurrentStage.stage}, Players: {NetworkSystem.instance.PlayerList.Count}, Items: {save.instance.ItemData.Count}, NPCs: {save.instance.npcs.Count}");
     }
-
 }

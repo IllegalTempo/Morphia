@@ -11,6 +11,14 @@ public class npc :Selectable
     }
     protected void EnterConversation(int index)
     {
+        if (index < 0 || index >= Conversations.Count || Conversations[index] == null)
+        {
+            Debug.LogError($"NPC {NpcName} has no conversation at index {index} or Already Played");
+            return;
+        }
+        gamecore.instance.AddConversation(Conversations[index]);
+        gamecore.instance.PlayNextDialogue();
+        Conversations[index] = null;
 
     }
 }
