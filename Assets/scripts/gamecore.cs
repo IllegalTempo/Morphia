@@ -46,6 +46,10 @@ public class gamecore : MonoBehaviour
     {
 
     }
+    public void AddConversation(string conversationKey)
+    {
+        CurrentPlayingConversation.AddRange(GetConversation[conversationKey].Dialogues);
+    }
     public void StartGame(string savename)
     {
         MainScreenUI.instance.animator.Play("mainmenu_prestart");
@@ -95,12 +99,12 @@ public class gamecore : MonoBehaviour
         }
         CurrentPlayingConversation.RemoveAt(0);
     }
-    private void LoadConversation()
+    private void LoadConversation(string scenename)
     {
         try
         {
             // Path to the conversation JSON file (adjust as needed)
-            string conversationPath = Application.streamingAssetsPath + "/conversations.json";
+            string conversationPath = Application.streamingAssetsPath + $"/{scenename}_conversations.json";
 
             if (!System.IO.File.Exists(conversationPath))
             {
@@ -179,7 +183,6 @@ public class gamecore : MonoBehaviour
     {
         LoadingScreen.SetActive(false);
         DialogueUI.SetActive(false);
-        LoadConversation();
     }
     private void OnDestroy()
     {
@@ -233,6 +236,8 @@ public class gamecore : MonoBehaviour
 
 
         Debug.Log("Scene Loaded: " + scene.name);
+        LoadConversation(scene.name);
+
         LoadingScreen.SetActive(false);
 
         SceneData sd = GameObject.Find("SceneCore").GetComponent<SceneData>();

@@ -1314,7 +1314,7 @@ MonoBehaviour:
   Spawnpoint:
   - {fileID: 1189739492}
   - {fileID: 1380282553}
-  NextSceneName: stage_1
+  NextSceneName: tutorial
   IsLobby: 1
 --- !u!4 &1966378774
 Transform:

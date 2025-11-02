@@ -12,6 +12,7 @@ public class NetworkSystem : MonoBehaviour
     [SerializeField]
     private bool CreateLobbyOnStart = true;
     public int MaxPlayer = 2;
+    public Material P2Material;
     [Header("NetworkData")]
     public bool Connected = false;
     public static NetworkSystem instance;
@@ -79,8 +80,13 @@ public class NetworkSystem : MonoBehaviour
         p.gameObject.GetComponent<PlayerMovement>().OnInitialized(networkid);
         p.steamID = steamid;
         p.IsLocal = isLocal;
-        p.gameObject.name = "Player_" + networkid;
+        p.gameObject.name = "Player" + networkid;
+        //p2 material
+        if(networkid == 1)
+        {
+            p.Body.GetComponent<Renderer>().material = P2Material;
 
+        }
         if (p.IsLocal)
         {
             gamecore.instance.LocalPlayer = p;

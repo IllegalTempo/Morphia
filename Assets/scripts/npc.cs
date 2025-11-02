@@ -8,6 +8,5 @@ public class npc :Selectable
     public override void OnClicked()
     {
         base.OnClicked();
-        Debug.Log("NPC clicked: " + gameObject.name);
     }
 }
