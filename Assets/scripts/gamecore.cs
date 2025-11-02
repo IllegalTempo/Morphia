@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 using Color = UnityEngine.Color;
 
 public class gamecore : MonoBehaviour
@@ -48,6 +49,9 @@ public class gamecore : MonoBehaviour
     private float preRotationX;
     private float preRotationY;
     private Coroutine currentDialogueCameraCoroutine;
+    
+    // Input Actions for dialogue
+    private InputAction dialogueProgressAction;
 
     public bool IsLocal(int id)
     {
@@ -56,8 +60,8 @@ public class gamecore : MonoBehaviour
     
     private void Update()
     {
-        // Handle dialogue progression with Enter key
-        if (InDialogue && Input.GetKeyDown(KeyCode.Return))
+        // Handle dialogue progression with Enter key using new Input System
+        if (InDialogue && dialogueProgressAction != null && dialogueProgressAction.triggered)
         {
             if (CurrentPlayingConversation.Count > 0)
             {
@@ -276,6 +280,9 @@ public class gamecore : MonoBehaviour
         Shader.SetGlobalColor("_ShadeColor", ShadeColor);
         SceneManager.sceneLoaded += OnSceneLoad;
         NetworkListener.Server_OnPlayerJoinSuccessful += Server_OnSecondPlayerJoined;
+        
+        // Setup dialogue input action
+        SetupDialogueInput();
     }
     
     private void Start()
@@ -287,6 +294,27 @@ public class gamecore : MonoBehaviour
     private void OnDestroy()
     {
         SceneManager.sceneLoaded -= OnSceneLoad;
+        
+        // Clean up dialogue input action
+        if (dialogueProgressAction != null)
+        {
+            dialogueProgressAction.Disable();
+            dialogueProgressAction.Dispose();
+        }
+    }
+    
+    /// <summary>
+    /// Sets up the Input Action for dialogue progression
+    /// </summary>
+    private void SetupDialogueInput()
+    {
+        // Create input action for Enter/Return key
+        dialogueProgressAction = new InputAction("DialogueProgress", InputActionType.Button);
+        dialogueProgressAction.AddBinding("<Keyboard>/enter");
+        dialogueProgressAction.AddBinding("<Keyboard>/numpadEnter");
+        
+        // Enable the action
+        dialogueProgressAction.Enable();
     }
     
     public void StartDialogue(string DialogueKey)

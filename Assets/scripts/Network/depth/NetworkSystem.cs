@@ -91,8 +91,17 @@ public class NetworkSystem : MonoBehaviour
                 SkinnedMeshRenderer renderer = body.GetComponent<SkinnedMeshRenderer>();
                 if(renderer != null)
                 {
-                    renderer.materials[0] = P2Material;
+                    renderer.material = P2Material;
                 }
+                else
+                {
+                    Debug.LogError("SkinnedMeshRenderer not found on MainBody");
+                }
+            }
+            else
+            {
+                Debug.LogError("MainBody not found on Player Instance");
+
             }
 
 
