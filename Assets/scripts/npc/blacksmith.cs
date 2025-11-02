@@ -6,6 +6,7 @@ public class blacksmith : npc
     {
         base.OnClicked();
         gamecore.instance.AddConversation("blacksmith_1");
+        gamecore.instance.PlayNextDialogue();
 
         // Additional blacksmith-specific interaction logic can be added here
     }

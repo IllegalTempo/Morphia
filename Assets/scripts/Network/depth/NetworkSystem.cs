@@ -85,7 +85,7 @@ public class NetworkSystem : MonoBehaviour
         if(networkid == 1)
         {
             //find child named "MainBody"
-            Transform body = p.transform.Find("Body");
+            Transform body = p.transform.Find("MainBody");
             if(body != null)
             {
                 SkinnedMeshRenderer renderer = body.GetComponent<SkinnedMeshRenderer>();
