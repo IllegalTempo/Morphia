@@ -84,7 +84,17 @@ public class NetworkSystem : MonoBehaviour
         //p2 material
         if(networkid == 1)
         {
-            p.Body.GetComponent<Renderer>().material = P2Material;
+            //find child named "MainBody"
+            Transform body = p.transform.Find("Body");
+            if(body != null)
+            {
+                SkinnedMeshRenderer renderer = body.GetComponent<SkinnedMeshRenderer>();
+                if(renderer != null)
+                {
+                    renderer.material = P2Material;
+                }
+            }
+
 
         }
         if (p.IsLocal)
