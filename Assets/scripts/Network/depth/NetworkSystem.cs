@@ -91,7 +91,7 @@ public class NetworkSystem : MonoBehaviour
                 SkinnedMeshRenderer renderer = body.GetComponent<SkinnedMeshRenderer>();
                 if(renderer != null)
                 {
-                    renderer.material = P2Material;
+                    renderer.materials[0] = P2Material;
                 }
             }
 

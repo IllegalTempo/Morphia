@@ -19,11 +19,6 @@ public class item : Selectable
     public float maxStickForce = 10f; // Maximum force when far away
     public float minStickDistance = 0.5f; // Distance at which force becomes zero
 
-    [Header("Nametag Settings")]
-    public bool showNameTag = true;
-    public Vector3 nameTagOffset = new Vector3(0, 1.5f, 0);
-    private GameObject nameTagObject;
-    private ItemNameTag nameTag;
 
     private bool PickedUp
     {
@@ -138,11 +133,6 @@ public class item : Selectable
         }
         netObj.Owner = networkID;
         
-        // Hide nametag when picked up
-        if (nameTag != null)
-        {
-            nameTag.SetVisibility(false);
-        }
     }
     
     public void Drop(Vector3 dropPosition,bool local)
@@ -163,11 +153,6 @@ public class item : Selectable
         itemCollider.enabled = true;
         netObj.Owner = -1;
         
-        // Show nametag when dropped
-        if (nameTag != null)
-        {
-            nameTag.SetVisibility(true);
-        }
     }
 
     private void Start()
@@ -181,26 +166,9 @@ public class item : Selectable
             rb.constraints = RigidbodyConstraints.FreezeAll;
         }
         
-        // Spawn a nametag above the item displaying itemname
-        if (showNameTag && !string.IsNullOrEmpty(ItemName))
-        {
-            SpawnNameTag();
-        }
     }
     
-    private void SpawnNameTag()
-    {
-        // Create nametag GameObject
-        nameTagObject = new GameObject($"{ItemName}_NameTag");
-        nameTagObject.transform.SetParent(transform);
-        nameTagObject.transform.localPosition = nameTagOffset;
-        nameTagObject.transform.localRotation = Quaternion.identity;
-        nameTagObject.transform.localScale = Vector3.one;
-        
-        // Add and initialize ItemNameTag component
-        nameTag = nameTagObject.AddComponent<ItemNameTag>();
-        nameTag.Initialize(ItemName, this);
-    }
+    
 
     protected override void Update()
     {
