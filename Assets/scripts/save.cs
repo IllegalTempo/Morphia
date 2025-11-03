@@ -14,6 +14,10 @@ public class save
     public Dictionary<string,NpcSaveData> FindNPC = new Dictionary<string, NpcSaveData>();
     public string CurrentStage = "";
     public string CurrentSaveName = "";
+    public Dictionary<string, MissionData> Missions = new Dictionary<string, MissionData>();
+    public List<MissionData> missionDatas = new List<MissionData>();
+
+    public List<string> CurrentMission = new List<string>();
     public static save instance = new save();
 
     public string[] GetFilesInSaveFolder()
@@ -94,6 +98,8 @@ public class save
             ItemData.Add(entry);
         }
         npcs = new List<NpcSaveData>(FindNPC.Values);
+        missionDatas = new List<MissionData>(Missions.Values);
+
 
     }
     private void ParseList()
@@ -105,6 +111,10 @@ public class save
         foreach (NpcSaveData npc in npcs)
         {
             FindNPC[npc.NpcName] = npc;
+        }
+        foreach (MissionData mission in missionDatas)
+        {
+            Missions[mission.MissionID] = mission;
         }
     }
     /// <summary>

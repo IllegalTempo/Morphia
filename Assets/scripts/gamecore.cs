@@ -7,7 +7,15 @@ using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using Color = UnityEngine.Color;
 using System.Linq;
+public class MissionData
+{
+    public string MissionID;
+    public string MissionName;
+    public string MissionDescription;
+    public bool Completed;
 
+
+}
 public class gamecore : MonoBehaviour
 {
     //instance reference
@@ -47,6 +55,7 @@ public class gamecore : MonoBehaviour
     
     // Input Actions for dialogue
     private InputAction dialogueProgressAction;
+    
 
     public bool IsLocal(int id)
     {
@@ -89,7 +98,6 @@ public class gamecore : MonoBehaviour
     {
         if (CurrentPlayingConversation.Count == 0)
         {
-            Debug.LogWarning("No dialogue to play!");
             EndDialogue();
             return;
         }
@@ -133,6 +141,7 @@ public class gamecore : MonoBehaviour
         }
         
         CurrentPlayingConversation.RemoveAt(0);
+        
     }
     
     /// <summary>
@@ -199,6 +208,9 @@ public class gamecore : MonoBehaviour
         {
             LocalPlayer.playerMovement.SetCharacterScreenOffset(Vector2.zero);
         }
+        
+        // Trigger criteria event for conversation finish
+        criteria.TriggerConversationFinish();
         
         Debug.Log("Dialogue ended");
     }
@@ -355,7 +367,17 @@ public class gamecore : MonoBehaviour
         }
 
     }
-    
+    public void GiveMission(string missionID)
+    {
+        if (!save.instance.Missions.ContainsKey(missionID))
+        {
+            Debug.LogError("Mission ID not found: " + missionID);
+            return;
+        }
+        save.instance.CurrentMission.Add(missionID);
+        MissionData md = save.instance.Missions[missionID];
+        AddMission(md.MissionName, md.MissionDescription);
+    }
     public void OnSceneLoad(UnityEngine.SceneManagement.Scene scene, LoadSceneMode mode)
     {
         LoadConversation(scene.name);
@@ -373,14 +395,32 @@ public class gamecore : MonoBehaviour
                 PacketSend.Server_Send_DistributeInitialPos(player.Value, sd.Spawnpoint[NetworkID % sd.Spawnpoint.Length].position, sd.Spawnpoint[NetworkID % sd.Spawnpoint.Length].rotation);
             }
         }
-        if (sd.IsLobby) return;
-        LocalPlayer.playerMovement.InGameSetup();
-
-        if(NetworkSystem.instance.IsServer)
+        if (sd.IsLobby) 
         {
-            ToSave();
-            SetUpScene(sd);
+            MissionParent.gameObject.SetActive(false);
+
         }
+        else
+        {
+            MissionParent.gameObject.SetActive(true);
+            foreach(string missionid in save.instance.CurrentMission)
+            {
+                if (save.instance.Missions.ContainsKey(missionid))
+                {
+                    MissionData md = save.instance.Missions[missionid];
+                    AddMission(md.MissionName, md.MissionDescription);
+                }
+            }
+            LocalPlayer.playerMovement.InGameSetup();
+
+            if (NetworkSystem.instance.IsServer)
+            {
+                ToSave();
+                SetUpScene(sd);
+            }
+        }
+
+            
         
     }
     
