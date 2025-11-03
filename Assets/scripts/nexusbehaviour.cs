@@ -5,8 +5,10 @@ public class nexusbehaviour : MonoBehaviour
     [Header("Follow Settings")]
     public Vector3 offsetFromPlayer = new Vector3(2f, 1f, 0f); // Side offset position relative to player
     public float followSpeed = 5f; // How fast the nexus follows the player
-    public float rotationSpeed = 5f; // How fast the nexus rotates to face movement direction
     public float minFollowDistance = 0.5f; // Minimum distance before starting to follow
+    
+    [Header("Rotation Settings")]
+    public Vector3 spinSpeed = new Vector3(100f, 100f,100f); // Rotation speed per axis (degrees per second)
     
     private NetworkPlayerObject localPlayer;
     
@@ -28,6 +30,9 @@ public class nexusbehaviour : MonoBehaviour
         {
             FollowPlayer();
         }
+        
+        // Continuously spin the nexus
+        SpinNexus();
     }
     
     private void FollowPlayer()
@@ -50,14 +55,12 @@ public class nexusbehaviour : MonoBehaviour
         {
             // Smoothly move towards target position
             transform.position = Vector3.Lerp(transform.position, targetPosition, followSpeed * Time.deltaTime);
-            
-            // Rotate to face the direction of movement
-            Vector3 moveDirection = targetPosition - transform.position;
-            if (moveDirection != Vector3.zero)
-            {
-                Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-            }
         }
+    }
+    
+    private void SpinNexus()
+    {
+        // Continuously rotate the nexus based on spinSpeed
+        transform.Rotate(spinSpeed * Time.deltaTime, Space.Self);
     }
 }
