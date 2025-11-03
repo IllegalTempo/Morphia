@@ -14,6 +14,7 @@ public class save
     public Dictionary<string,NpcSaveData> FindNPC = new Dictionary<string, NpcSaveData>();
     public string CurrentStage = "";
     public string CurrentSaveName = "";
+
     public Dictionary<string, MissionData> Missions = new Dictionary<string, MissionData>();
     public List<MissionData> missionDatas = new List<MissionData>();
 

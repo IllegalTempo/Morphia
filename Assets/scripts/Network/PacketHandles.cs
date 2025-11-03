@@ -254,6 +254,22 @@ public class PacketHandles_Method
 			Debug.LogError($"Failed to drop item: {itemid} not found.");
 		}
 	}
+
+	public static void Client_Handle_DistributeNewMission(Connection c, packet packet)
+	{
+		string missionID = packet.ReadstringUNICODE();
+		string missiontitle = packet.ReadstringUNICODE();
+		string missiondesc = packet.ReadstringUNICODE();
+		bool newmission = packet.Readbool();
+		if (newmission)
+		{
+			gamecore.instance.AddMission(missionID, missiontitle, missiondesc);
+		}
+		else
+		{
+			gamecore.instance.FinishMission(missionID);
+		}
+	}
 }
 
 

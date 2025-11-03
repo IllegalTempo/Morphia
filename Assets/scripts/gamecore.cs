@@ -369,8 +369,9 @@ public class gamecore : MonoBehaviour
         }
 
     }
-    public void GiveMission(string missionID)
+    public void GiveMission(string missionID) // this is ONLY for server
     {
+        if (!NetworkSystem.instance.IsServer) return;
         if (!save.instance.Missions.ContainsKey(missionID))
         {
             Debug.LogError("Mission ID not found: " + missionID);
@@ -378,8 +379,30 @@ public class gamecore : MonoBehaviour
         }
         save.instance.CurrentMission.Add(missionID);
         MissionData md = save.instance.Missions[missionID];
-        AddMission(md.MissionName, md.MissionDescription);
+
+        AddMission(missionID,md.MissionName, md.MissionDescription);
     }
+    private Dictionary<string,SingleMissionControll> InUIMission = new Dictionary<string, SingleMissionControll>();
+    public void AddMission(string MissionID,string MissionTitle, string MissionDescription)
+    {
+        if (NetworkSystem.instance.IsServer)
+        {
+            PacketSend.Server_Send_Distribute_Mission(MissionID,MissionTitle, MissionDescription,true);
+        }
+        SingleMissionControll ui = Instantiate(SingleMissionInstance, MissionParent).GetComponent<SingleMissionControll>();
+        ui.SetMission(MissionTitle, MissionDescription);
+        InUIMission.Add(MissionID, ui);
+
+    }
+    public void FinishMission(string MissionID)
+    {
+        if (NetworkSystem.instance.IsServer)
+        {
+            PacketSend.Server_Send_Distribute_Mission(MissionID,"","",false);
+        }
+        InUIMission[MissionID].CompleteMission();
+    }
+
     public void OnSceneLoad(UnityEngine.SceneManagement.Scene scene, LoadSceneMode mode)
     {
         LoadConversation(scene.name);
@@ -410,7 +433,7 @@ public class gamecore : MonoBehaviour
                 if (save.instance.Missions.ContainsKey(missionid))
                 {
                     MissionData md = save.instance.Missions[missionid];
-                    AddMission(md.MissionName, md.MissionDescription);
+                    AddMission(missionid, md.MissionName, md.MissionDescription);
                 }
             }
             LocalPlayer.playerMovement.InGameSetup();
@@ -462,10 +485,8 @@ public class gamecore : MonoBehaviour
         }
     }
     
-    public void AddMission(string MissionTitle, string MissionDescription)
-    {
-        Instantiate(SingleMissionInstance, MissionParent).GetComponent<SingleMissionControll>().SetMission(MissionTitle, MissionDescription);
-    }
+    
+    
     
     public void ToSave()
     {
