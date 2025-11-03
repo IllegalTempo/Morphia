@@ -5056,6 +5056,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::gamecore
   ShadeColor: {r: 0.9433962, g: 0.7698469, b: 0.7698469, a: 0}
+  MissionGroup: {fileID: 7356036}
   SingleMissionInstance: {fileID: 6472964411847666910, guid: 30147995bd28dea48b0489ed013597fb, type: 3}
   MissionParent: {fileID: 502185037}
   LoadingScreen: {fileID: 469821418}

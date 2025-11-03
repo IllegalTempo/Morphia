@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using Color = UnityEngine.Color;
 using System.Linq;
+[System.Serializable]
 public class MissionData
 {
     public string MissionID;
@@ -22,6 +23,7 @@ public class gamecore : MonoBehaviour
     public static gamecore instance;
     public Color ShadeColor;
     [Header("UI/MissionSystem")]
+    public GameObject MissionGroup;
     public GameObject SingleMissionInstance;
     public Transform MissionParent;
     [Header("UI/LoadingScreen")]
@@ -397,12 +399,12 @@ public class gamecore : MonoBehaviour
         }
         if (sd.IsLobby) 
         {
-            MissionParent.gameObject.SetActive(false);
+            MissionGroup.SetActive(false);
 
         }
         else
         {
-            MissionParent.gameObject.SetActive(true);
+            MissionGroup.SetActive(true);
             foreach(string missionid in save.instance.CurrentMission)
             {
                 if (save.instance.Missions.ContainsKey(missionid))
