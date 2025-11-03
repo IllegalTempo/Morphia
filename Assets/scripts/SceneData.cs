@@ -10,6 +10,7 @@ public class SceneData : MonoBehaviour
     public Transform[] Spawnpoint;
     public string NextSceneName;
     public bool IsLobby = false;
+    public Dictionary<string,npc> GetNPC = new Dictionary<string, npc>();
     public void NextStage()
     {
         StartCoroutine(gamecore.instance.LoadScene(NextSceneName));
@@ -25,6 +26,10 @@ public class SceneData : MonoBehaviour
         if (stage == "mainscreen")
         {
             gamecore.instance.CurrentStage = this;
+        }
+        foreach (var npc in npcs)
+        {
+            GetNPC[npc.NpcName] = npc;
         }
     }
 

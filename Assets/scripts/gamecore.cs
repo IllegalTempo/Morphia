@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using Color = UnityEngine.Color;
+using System.Linq;
 
 public class gamecore : MonoBehaviour
 {
@@ -21,6 +22,7 @@ public class gamecore : MonoBehaviour
     public TMP_Text LoadingText;
     [Header("UI/Dialogue")]
     public GameObject DialogueUI;
+    public TMP_Text DialogueCharacterName;
     public TMP_Text DialogueText;
     [Header("Dialogue Camera Settings")]
     public float dialogueCameraDistance = 3f; // Distance from character
@@ -37,17 +39,10 @@ public class gamecore : MonoBehaviour
     public float groundCheckDistance = 0.1f; // Distance to check for ground
     public SceneData CurrentStage;
     public LayerMask Interactable;
-    public LayerMask groundLayer; // Set this in Inspector to only check ground objects
-    private bool SaveLoaded = false;
+    public LayerMask groundLayer;
     public string SelectedSaveName = "";
     public Dictionary<string, conversation> GetConversation = new Dictionary<string, conversation>();
     public List<dialogue> CurrentPlayingConversation;
-    
-    // Store original camera state for restoration after dialogue
-    private Vector3 preCameraPosition;
-    private Quaternion preCameraRotation;
-    private float preRotationX;
-    private float preRotationY;
     private Coroutine currentDialogueCameraCoroutine;
     
     // Input Actions for dialogue
@@ -90,7 +85,6 @@ public class gamecore : MonoBehaviour
         //Wait 5 seconds 
         StartCoroutine(WaitAndStartGame(savename));
     }
-    
     public void PlayNextDialogue()
     {
         if (CurrentPlayingConversation.Count == 0)
@@ -101,7 +95,7 @@ public class gamecore : MonoBehaviour
         }
 
         dialogue dialogue = CurrentPlayingConversation[0];
-        
+        string[] ignorelist = { "Nexus", "Gameplay", "narrator" };
         // Find the character GameObject by name
         GameObject character = GameObject.Find(dialogue.CharacterName);
 
@@ -118,10 +112,11 @@ public class gamecore : MonoBehaviour
         DialogueUI.SetActive(true);
 
         // Set dialogue text
-        DialogueText.text = "[" + dialogue.CharacterName + "]" + dialogue.DialogueText;
+        DialogueText.text = dialogue.DialogueText;
+        DialogueCharacterName.text = dialogue.CharacterName;
 
         // Position camera in front of character
-        if (LocalPlayer != null && LocalPlayer.playerMovement != null && LocalPlayer.playerMovement.playerCamera != null)
+        if (LocalPlayer != null && LocalPlayer.playerMovement != null && LocalPlayer.playerMovement.playerCamera != null && !ignorelist.Contains(dialogue.CharacterName))
         {
             // Stop any existing camera transition
             if (currentDialogueCameraCoroutine != null)
@@ -315,6 +310,7 @@ public class gamecore : MonoBehaviour
         dialogueProgressAction = new InputAction("DialogueProgress", InputActionType.Button);
         dialogueProgressAction.AddBinding("<Keyboard>/enter");
         dialogueProgressAction.AddBinding("<Keyboard>/numpadEnter");
+        dialogueProgressAction.AddBinding("<Mouse>/leftButton");
         
         // Enable the action
         dialogueProgressAction.Enable();
@@ -357,7 +353,6 @@ public class gamecore : MonoBehaviour
             }
         }
 
-        SaveLoaded = true;
     }
     
     public void OnSceneLoad(UnityEngine.SceneManagement.Scene scene, LoadSceneMode mode)
