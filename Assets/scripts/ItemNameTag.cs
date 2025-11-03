@@ -4,12 +4,11 @@ using UnityEngine;
 public class ItemNameTag : MonoBehaviour
 {
     public TMP_Text nameTagText;
-    public void InitializeItemTag(item itemComponent,float ypos)
+    public void InitializeItemTag(string text,float ypos)
     {
-        if (itemComponent != null && nameTagText != null)
-        {
-            nameTagText.text = itemComponent.ItemName;
-        }
+            nameTagText.text = text;
+        
         transform.localPosition = new Vector3(0, ypos, 0);
+        transform.localScale = Vector3.one;
     }
 }

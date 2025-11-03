@@ -166,7 +166,7 @@ public class item : Selectable
             rb.constraints = RigidbodyConstraints.FreezeAll;
         }
         ItemNameTag tag = Instantiate(gamecore.instance.ItemNameTagPrefab, transform).GetComponent<ItemNameTag>();
-        tag.InitializeItemTag(this, itemCollider.bounds.size.y + 1.2f);
+        tag.InitializeItemTag(ItemName, 1f);
 
     }
     

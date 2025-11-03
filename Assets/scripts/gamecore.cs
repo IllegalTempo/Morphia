@@ -95,13 +95,15 @@ public class gamecore : MonoBehaviour
         }
 
         dialogue dialogue = CurrentPlayingConversation[0];
-        string[] ignorelist = { "Nexus", "Gameplay", "narrator" };
+        string[] ignorelist = { "Gameplay", "narrator" };
         // Find the character GameObject by name
         GameObject character = GameObject.Find(dialogue.CharacterName);
 
         if (character == null)
         {
             Debug.LogError($"Character '{dialogue.CharacterName}' not found in scene!");
+            //set character to local player if not found
+            character = LocalPlayer.gameObject;
         }
 
         // Set dialogue state

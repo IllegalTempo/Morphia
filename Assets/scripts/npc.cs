@@ -9,6 +9,12 @@ public class npc :Selectable
     {
         base.OnClicked();
     }
+    private void Start()
+    {
+        ItemNameTag tag = Instantiate(gamecore.instance.ItemNameTagPrefab, transform).GetComponent<ItemNameTag>();
+        tag.InitializeItemTag(NpcName, 1f);
+
+    }
     protected void EnterConversation(int index)
     {
         if (index < 0 || index >= Conversations.Count || Conversations[index] == null)
