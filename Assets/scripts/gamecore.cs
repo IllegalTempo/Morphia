@@ -102,7 +102,6 @@ public class gamecore : MonoBehaviour
         if (character == null)
         {
             Debug.LogError($"Character '{dialogue.CharacterName}' not found in scene!");
-            return;
         }
 
         // Set dialogue state
