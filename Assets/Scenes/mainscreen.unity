@@ -5660,10 +5660,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cf8b8369bc341c408f4d81b11136307, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::nexusbehaviour
-  offsetFromPlayer: {x: 2, y: 1, z: 0}
-  followSpeed: 5
-  rotationSpeed: 5
-  minFollowDistance: 0.5
+  offsetFromPlayer: {x: 4, y: 2, z: 0}
+  followSpeed: 1
+  minFollowDistance: 0
+  spinSpeed: {x: 50, y: 50, z: 50}
 --- !u!1 &1801798680
 GameObject:
   m_ObjectHideFlags: 0
