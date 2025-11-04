@@ -247,7 +247,6 @@ public class gamecore : MonoBehaviour
         }
         
         // Trigger criteria event for conversation finish
-        criteria.instance.TriggerConversationFinish();
         if(CurrentConversation != null)
         {
             // Mark conversation as completed for the NPC
@@ -259,6 +258,7 @@ public class gamecore : MonoBehaviour
             }
             CurrentConversation = null;
         }
+        criteria.instance.TriggerConversationFinish();
 
         Debug.Log("Conversation ended");
     }
