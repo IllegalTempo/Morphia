@@ -190,7 +190,7 @@ public class item : Selectable
         {
 
             outline.enabled = true;
-            if (Mouse.current.leftButton.wasPressedThisFrame)
+            if (Mouse.current.leftButton.wasPressedThisFrame && !gamecore.instance.InDialogue)
             {
                 OnClicked();
             }
