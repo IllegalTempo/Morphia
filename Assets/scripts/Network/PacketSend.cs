@@ -241,11 +241,14 @@ public class PacketSend
             return BroadcastPacket(p);
         }
     }
-    public static Result Server_Send_enterconversation(string conversationID)
+    public static Result Server_Send_enterconversation(string conversationID,string npcname,int conversationindex)
     {
         using (packet p = new packet((int)ServerPackets.enterconversation))
         {
             p.WriteUNICODE(conversationID);
+            p.WriteUNICODE(npcname);
+            p.Write(conversationindex);
+
             return BroadcastPacket(p);
         }
     }
@@ -366,11 +369,13 @@ public class PacketSend
     }
 
     
-    public static Result Client_Send_EnterConversation(string ConversationID)
+    public static Result Client_Send_EnterConversation(string ConversationID,string npcname,int index)
     {
         using (packet p = new packet((int)ClientPackets.EnterConversation))
         {
             p.WriteUNICODE(ConversationID);
+            p.WriteUNICODE(npcname);
+            p.Write(index);
 
 
             return SendToServer(p);

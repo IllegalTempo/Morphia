@@ -274,12 +274,34 @@ public class PacketHandles_Method
 	public static void Client_Handle_enterconversation(Connection c, packet packet)
 	{
 		string conversationid = packet.ReadstringUNICODE();
-		gamecore.instance.StartConversation(conversationid,false);
+		string npcname = packet.ReadstringUNICODE();
+		int index = packet.Readint();
+		if(index == -1)
+		{
+			gamecore.instance.StartConversation(conversationid, false);
+
+		} else
+		{
+
+			gamecore.instance.StartConversation(conversationid, gamecore.instance.CurrentStage.GetNPC[npcname],index, false);
+		}
 	}
 
 	public static void Server_Handle_EnterConversation(NetworkPlayer p, packet packet)
 	{
 		string conversationid = packet.ReadstringUNICODE();
+		string npcname = packet.ReadstringUNICODE();
+		int index = packet.Readint();
+		if (index == -1)
+		{
+			gamecore.instance.StartConversation(conversationid, false);
+
+		}
+		else
+		{
+
+			gamecore.instance.StartConversation(conversationid, gamecore.instance.CurrentStage.GetNPC[npcname], index, false);
+		}
 		gamecore.instance.StartConversation(conversationid,false);
 	}
 

@@ -24,7 +24,7 @@ public class Tutorial_SceneCore : SceneData
             gamecore.instance.FinishMission("tutorial_1");
             criteria.instance.Conversation_onFinish -= tutorial_ambush_rev;
 
-            gamecore.instance.StartConversation("ambush_revolutionaries",true);
+            gamecore.instance.StartConversation("ambush_revolutionaries",null,0,true);
         }
     }
 }

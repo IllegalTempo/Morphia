@@ -106,30 +106,44 @@ public class gamecore : MonoBehaviour
 
     }
     Conv_Ref CurrentConversation;
-    public void StartConversation(string conversationKey, bool send)
+    public void StartConversation(string conversationKey,npc npc, int index, bool send)
     {
-        if(send)
+
+        CurrentConversation = new Conv_Ref(npc, index);
+
+        if (send)
         {
             if (NetworkSystem.instance.IsServer)
             {
-                PacketSend.Server_Send_enterconversation(conversationKey);
+                PacketSend.Server_Send_enterconversation(conversationKey,npc.NpcName,index);
 
             }
             else
             {
-                PacketSend.Client_Send_EnterConversation(conversationKey);
+                PacketSend.Client_Send_EnterConversation(conversationKey, npc.NpcName, index);
             }
         }
         
         CurrentPlayingConversation.AddRange(GetConversation[conversationKey].Dialogues);
         gamecore.instance.PlayNextDialogue();
     }
-    
-    public void StartConversation(string conversationKey,npc npc,int index) //with npc reference, normal this is triggered by talking to that npc
+    public void StartConversation(string conversationKey,bool send)
     {
-        StartConversation(conversationKey,true);
-        CurrentConversation = new Conv_Ref(npc,index);
+        if (send)
+        {
+            if (NetworkSystem.instance.IsServer)
+            {
+                PacketSend.Server_Send_enterconversation(conversationKey,"", -1);
+            }
+            else
+            {
+                PacketSend.Client_Send_EnterConversation(conversationKey, "", -1);
+            }
+        }
+        CurrentPlayingConversation.AddRange(GetConversation[conversationKey].Dialogues);
+        gamecore.instance.PlayNextDialogue();
     }
+    
 
     public void StartGame(string savename)
     {
@@ -265,6 +279,7 @@ public class gamecore : MonoBehaviour
                 npc.Conversations[index] = null;
             }
             CurrentConversation = null;
+            Debug.Log("MK_GC_268");
         }
         criteria.instance.TriggerConversationFinish();
 

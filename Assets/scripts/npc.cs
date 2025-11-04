@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class npc :Selectable
 {
+    
     public string NpcName;
     public List<string> Conversations = new List<string>();
     public override void OnClicked()
@@ -22,7 +23,7 @@ public class npc :Selectable
             Debug.LogError($"NPC {NpcName} has no conversation at index {index} or Already Played");
             return;
         }
-        gamecore.instance.StartConversation(Conversations[index],this,index);
+        gamecore.instance.StartConversation(Conversations[index],true);
 
     }
 }
