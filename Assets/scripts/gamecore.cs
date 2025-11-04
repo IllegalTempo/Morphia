@@ -73,9 +73,6 @@ public class gamecore : MonoBehaviour
     public List<dialogue> CurrentPlayingConversation;
     private Coroutine currentDialogueCameraCoroutine;
     
-    // Input Actions for dialogue
-    private InputAction dialogueProgressAction;
-    
 
     public bool IsLocal(int id)
     {
@@ -85,7 +82,7 @@ public class gamecore : MonoBehaviour
     private void Update()
     {
         // Handle dialogue progression with Enter key using new Input System
-        if (InDialogue && dialogueProgressAction != null && dialogueProgressAction.triggered)
+        if (InDialogue && Mouse.current.leftButton.wasPressedThisFrame)
         {
             if (CurrentPlayingConversation.Count > 0)
             {
@@ -338,7 +335,6 @@ public class gamecore : MonoBehaviour
         NetworkListener.Server_OnPlayerJoinSuccessful += Server_OnSecondPlayerJoined;
         
         // Setup dialogue input action
-        SetupDialogueInput();
     }
     
     private void Start()
@@ -351,28 +347,12 @@ public class gamecore : MonoBehaviour
     {
         SceneManager.sceneLoaded -= OnSceneLoad;
         
-        // Clean up dialogue input action
-        if (dialogueProgressAction != null)
-        {
-            dialogueProgressAction.Disable();
-            dialogueProgressAction.Dispose();
-        }
     }
     
     /// <summary>
     /// Sets up the Input Action for dialogue progression
     /// </summary>
-    private void SetupDialogueInput()
-    {
-        // Create input action for Enter/Return key
-        dialogueProgressAction = new InputAction("DialogueProgress", InputActionType.Button);
-        dialogueProgressAction.AddBinding("<Keyboard>/enter");
-        dialogueProgressAction.AddBinding("<Keyboard>/numpadEnter");
-        dialogueProgressAction.AddBinding("<Mouse>/leftButton");
-        
-        // Enable the action
-        dialogueProgressAction.Enable();
-    }
+    
     
     
     private void SetUpScene(SceneData sd)

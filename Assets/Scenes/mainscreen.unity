@@ -661,15 +661,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: e35032a485d2c604884776d5d153a255, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.05
+      value: 0.07
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e35032a485d2c604884776d5d153a255, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.05
+      value: 0.07
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e35032a485d2c604884776d5d153a255, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.05
+      value: 0.07
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e35032a485d2c604884776d5d153a255, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1154,6 +1154,7 @@ GameObject:
   m_Component:
   - component: {fileID: 204218606}
   - component: {fileID: 204218605}
+  - component: {fileID: 204218607}
   m_Layer: 0
   m_Name: SceneCore
   m_TagString: Untagged
@@ -1198,6 +1199,18 @@ Transform:
   - {fileID: 2124623430}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &204218607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 204218604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb477d23d86c9de49aa94373741ffc6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::criteria
 --- !u!1 &327533729
 GameObject:
   m_ObjectHideFlags: 0
