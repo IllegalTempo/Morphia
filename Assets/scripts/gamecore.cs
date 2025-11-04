@@ -426,7 +426,9 @@ public class gamecore : MonoBehaviour
             PacketSend.Server_Send_Distribute_Mission(MissionID,"","",false);
             save.instance.Missions[MissionID].Completed = true;
 
+
         }
+
         InUIMission[MissionID].CompleteMission();
 
     }

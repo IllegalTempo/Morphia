@@ -230,7 +230,7 @@ public class PacketSend
             return BroadcastPacket(p);
         }
     }
-    public static Result Server_Send_Distribute_Mission(string MissionID,string missionName,string missiondescription,bool newmission)
+    public static Result Server_Send_Distribute_Mission(string MissionID, string missionName, string missiondescription, bool newmission)
     {
         using (packet p = new packet((int)ServerPackets.DistributeNewMission))
         {
