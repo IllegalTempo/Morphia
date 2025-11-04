@@ -166,7 +166,7 @@ public class gamecore : MonoBehaviour
 
         if (character == null)
         {
-            Debug.LogError($"Character '{dialogue.CharacterName}' not found in scene!");
+            Debug.LogWarning($"Character '{dialogue.CharacterName}' not found in scene!");
             //set character to local player if not found
             character = LocalPlayer.gameObject;
         }
@@ -178,7 +178,14 @@ public class gamecore : MonoBehaviour
 
         // Set dialogue text
         DialogueText.text = dialogue.DialogueText;
-        DialogueCharacterName.text = dialogue.CharacterName;
+        if (dialogue.CharacterName.Contains("/"))
+        {
+            DialogueCharacterName.text = dialogue.CharacterName.Split("/")[1];
+
+        } else
+        {
+            DialogueCharacterName.text = dialogue.CharacterName;
+        }
 
         // Position camera in front of character
         if (LocalPlayer != null && LocalPlayer.playerMovement != null && LocalPlayer.playerMovement.playerCamera != null && !ignorelist.Contains(dialogue.CharacterName))

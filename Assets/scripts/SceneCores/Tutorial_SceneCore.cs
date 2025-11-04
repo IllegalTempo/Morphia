@@ -4,14 +4,30 @@ public class Tutorial_SceneCore : SceneData
 {
     protected override void StartMethod()
     {
-        if(NetworkSystem.instance.IsServer && !save.instance.Missions["tutorial_1"].Completed)
+        if (!NetworkSystem.instance.IsServer) return;
+        if (!save.instance.Missions["tutorial_1"].Completed)
         {
             criteria.instance.Conversation_onFinish += tutorial_ambush_rev;
             MissionData missionData = save.instance.Missions["tutorial_1"];
             gamecore.instance.AddMission(missionData);
         }
-            
-        
+        if (!save.instance.Missions["intro"].Completed)
+        {
+            MissionData missionData = save.instance.Missions["intro"];
+            gamecore.instance.AddMission(missionData);
+            gamecore.instance.StartConversation("intro", true);
+            criteria.instance.Conversation_onFinish += FinishIntro;
+
+        }
+
+
+
+    }
+    public void FinishIntro()
+    {
+        gamecore.instance.FinishMission("intro");
+        criteria.instance.Conversation_onFinish -= FinishIntro;
+
     }
     public void tutorial_ambush_rev()
     {
@@ -24,7 +40,7 @@ public class Tutorial_SceneCore : SceneData
             gamecore.instance.FinishMission("tutorial_1");
             criteria.instance.Conversation_onFinish -= tutorial_ambush_rev;
 
-            gamecore.instance.StartConversation("ambush_revolutionaries",null,0,true);
+            gamecore.instance.StartConversation("ambush_revolutionaries",true);
         }
     }
 }

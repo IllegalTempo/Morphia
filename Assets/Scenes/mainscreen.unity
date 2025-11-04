@@ -281,8 +281,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: narratorfdsjakflssd
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: b66740fb00500d448b383396f21ffe99, type: 2}
-  m_sharedMaterial: {fileID: -8052484752556657137, guid: b66740fb00500d448b383396f21ffe99, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -306,17 +306,17 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 17.1
+  m_fontSize: 22.9
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 9
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
-  m_characterSpacing: 0
+  m_characterSpacing: 12
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -1666,8 +1666,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Mission
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: b66740fb00500d448b383396f21ffe99, type: 2}
-  m_sharedMaterial: {fileID: -8052484752556657137, guid: b66740fb00500d448b383396f21ffe99, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1691,17 +1691,17 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18
+  m_fontSize: 18.25
   m_fontSizeBase: 32
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
-  m_characterSpacing: 0
+  m_characterSpacing: 12
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -1962,6 +1962,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fc2838fead9b9a41a1b3981a965bf6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::voidbehaviour
+  bounceForce: 20
+  minBounceForce: 10
 --- !u!54 &454372506
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -5233,7 +5235,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3b59c28bec2d364f8656c83136c0b8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::gamecore
-  ShadeColor: {r: 0.9433962, g: 0.7698469, b: 0.7698469, a: 0}
+  ShadeColor: {r: 0.8862745, g: 0.72999173, b: 0.64705884, a: 0}
   MissionGroup: {fileID: 7356036}
   SingleMissionInstance: {fileID: 6472964411847666910, guid: 30147995bd28dea48b0489ed013597fb, type: 3}
   MissionParent: {fileID: 502185037}
@@ -6777,8 +6779,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: m your mum do you know that
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: b66740fb00500d448b383396f21ffe99, type: 2}
-  m_sharedMaterial: {fileID: -8052484752556657137, guid: b66740fb00500d448b383396f21ffe99, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -6808,11 +6810,11 @@ MonoBehaviour:
   m_enableAutoSizing: 1
   m_fontSizeMin: 20.7
   m_fontSizeMax: 30
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
   m_textAlignment: 65535
-  m_characterSpacing: -1.5
+  m_characterSpacing: 12
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0

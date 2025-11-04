@@ -20,7 +20,7 @@ public class npc :Selectable
     {
         if (index < 0 || index >= Conversations.Count || Conversations[index] == null)
         {
-            Debug.LogError($"NPC {NpcName} has no conversation at index {index} or Already Played");
+            Debug.LogWarning($"NPC {NpcName} has no conversation at index {index} or Already Played");
             return;
         }
         gamecore.instance.StartConversation(Conversations[index],this,index,true);

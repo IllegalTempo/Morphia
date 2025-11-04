@@ -81,6 +81,7 @@ public class save
         CurrentStage = "intro";
         missionDatas = new List<MissionData>
         {
+            new MissionData("intro", "Welcome to the Game!", ""),
             new MissionData("tutorial_1", "Once upon a time there were three little pigs", "Talk to the Priest, Blacksmith and Farmer")
         };
         ParseList();
