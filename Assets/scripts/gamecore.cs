@@ -100,6 +100,7 @@ public class gamecore : MonoBehaviour
         }
         if(readingfragment != null && Mouse.current.leftButton.wasPressedThisFrame)
         {
+            FinishEF();
 
         }
 
