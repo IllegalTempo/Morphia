@@ -29,6 +29,8 @@ public class PacketSend
         DistributeDrop = 11
     ,
         DistributeNewMission = 12
+    ,
+        enterconversation = 13
     };
     public static string TestRandomUnicode = "幻想鄉是一個與外界隔絕的神秘之地，其存在自古以來便被視為傳說而流傳。";
     public static Result Server_Send_test(NetworkPlayer pl)
@@ -225,6 +227,14 @@ public class PacketSend
             p.WriteUNICODE(missionName);
             p.WriteUNICODE(missiondescription);
             p.Write(newmission);
+            return BroadcastPacket(p);
+        }
+    }
+    public static Result Server_Send_enterconversation(string conversationID)
+    {
+        using (packet p = new packet((int)ServerPackets.enterconversation))
+        {
+            p.WriteUNICODE(conversationID);
             return BroadcastPacket(p);
         }
     }

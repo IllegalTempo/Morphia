@@ -22,9 +22,7 @@ public class npc :Selectable
             Debug.LogError($"NPC {NpcName} has no conversation at index {index} or Already Played");
             return;
         }
-        gamecore.instance.AddConversation(Conversations[index]);
-        gamecore.instance.PlayNextDialogue();
-        Conversations[index] = null;
+        gamecore.instance.StartConversation(Conversations[index],this,index);
 
     }
 }

@@ -1,12 +1,13 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UnityEngine.InputSystem;
 using Color = UnityEngine.Color;
-using System.Linq;
 [System.Serializable]
 public class MissionData
 {
@@ -14,8 +15,25 @@ public class MissionData
     public string MissionName;
     public string MissionDescription;
     public bool Completed;
+    public MissionData(string id, string name, string description)
+    {
+        MissionID = id;
+        MissionName = name;
+        MissionDescription = description;
+        Completed = false;
+    }
 
 
+}
+public class Conv_Ref
+{
+    public int conversationIndex; //in npc
+    public npc npc;
+    public Conv_Ref(npc npc, int index)
+    {
+        this.npc = npc;
+        conversationIndex = index;
+    }
 }
 public class gamecore : MonoBehaviour
 {
@@ -82,12 +100,19 @@ public class gamecore : MonoBehaviour
 
 
     }
-    
-    public void AddConversation(string conversationKey)
+    Conv_Ref CurrentConversation;
+    public void StartConversation(string conversationKey)
     {
+        PacketSend.Server_Send_enterconversation(conversationKey);
         CurrentPlayingConversation.AddRange(GetConversation[conversationKey].Dialogues);
+        gamecore.instance.PlayNextDialogue();
     }
-    
+    public void StartConversation(string conversationKey,npc npc,int index) //with npc reference, normal this is triggered by talking to that npc
+    {
+        StartConversation(conversationKey);
+        CurrentConversation = new Conv_Ref(npc,index);
+    }
+
     public void StartGame(string savename)
     {
         MainScreenUI.instance.animator.Play("mainmenu_prestart");
@@ -212,9 +237,20 @@ public class gamecore : MonoBehaviour
         }
         
         // Trigger criteria event for conversation finish
-        criteria.TriggerConversationFinish();
-        
-        Debug.Log("Dialogue ended");
+        criteria.instance.TriggerConversationFinish();
+        if(CurrentConversation != null)
+        {
+            // Mark conversation as completed for the NPC
+            npc npc = CurrentConversation.npc;
+            int index = CurrentConversation.conversationIndex;
+            if (npc != null && index >= 0 && index < npc.Conversations.Count)
+            {
+                npc.Conversations[index] = null;
+            }
+            CurrentConversation = null;
+        }
+
+        Debug.Log("Conversation ended");
     }
 
     private void LoadConversation(string scenename)
@@ -331,10 +367,6 @@ public class gamecore : MonoBehaviour
         dialogueProgressAction.Enable();
     }
     
-    public void StartDialogue(string DialogueKey)
-    {
-
-    }
     
     private void SetUpScene(SceneData sd)
     {
@@ -369,19 +401,7 @@ public class gamecore : MonoBehaviour
         }
 
     }
-    public void GiveMission(string missionID) // this is ONLY for server
-    {
-        if (!NetworkSystem.instance.IsServer) return;
-        if (!save.instance.Missions.ContainsKey(missionID))
-        {
-            Debug.LogError("Mission ID not found: " + missionID);
-            return;
-        }
-        save.instance.CurrentMission.Add(missionID);
-        MissionData md = save.instance.Missions[missionID];
-
-        AddMission(missionID,md.MissionName, md.MissionDescription);
-    }
+    
     private Dictionary<string,SingleMissionControll> InUIMission = new Dictionary<string, SingleMissionControll>();
     public void AddMission(string MissionID,string MissionTitle, string MissionDescription)
     {
@@ -394,13 +414,20 @@ public class gamecore : MonoBehaviour
         InUIMission.Add(MissionID, ui);
 
     }
+    public void AddMission(MissionData md)
+    {
+        AddMission(md.MissionID, md.MissionName, md.MissionDescription);
+    }
     public void FinishMission(string MissionID)
     {
         if (NetworkSystem.instance.IsServer)
         {
             PacketSend.Server_Send_Distribute_Mission(MissionID,"","",false);
+            save.instance.Missions[MissionID].Completed = true;
+
         }
         InUIMission[MissionID].CompleteMission();
+
     }
 
     public void OnSceneLoad(UnityEngine.SceneManagement.Scene scene, LoadSceneMode mode)
@@ -428,14 +455,6 @@ public class gamecore : MonoBehaviour
         else
         {
             MissionGroup.SetActive(true);
-            foreach(string missionid in save.instance.CurrentMission)
-            {
-                if (save.instance.Missions.ContainsKey(missionid))
-                {
-                    MissionData md = save.instance.Missions[missionid];
-                    AddMission(missionid, md.MissionName, md.MissionDescription);
-                }
-            }
             LocalPlayer.playerMovement.InGameSetup();
 
             if (NetworkSystem.instance.IsServer)

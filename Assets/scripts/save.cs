@@ -10,15 +10,14 @@ public class save
 {
     public List<ItemDataEntry> ItemData = new List<ItemDataEntry>();
     public List<NpcSaveData> npcs = new List<NpcSaveData>();
-    public Dictionary<ItemIdentifier,SaveInfo_Item> FindSavedItem = new Dictionary<ItemIdentifier, SaveInfo_Item>();
-    public Dictionary<string,NpcSaveData> FindNPC = new Dictionary<string, NpcSaveData>();
+    public Dictionary<ItemIdentifier, SaveInfo_Item> FindSavedItem = new Dictionary<ItemIdentifier, SaveInfo_Item>();
+    public Dictionary<string, NpcSaveData> FindNPC = new Dictionary<string, NpcSaveData>();
     public string CurrentStage = "";
     public string CurrentSaveName = "";
 
-    public Dictionary<string, MissionData> Missions = new Dictionary<string, MissionData>();
-    public List<MissionData> missionDatas = new List<MissionData>();
+    public Dictionary<string, MissionData> Missions = new Dictionary<string, MissionData>(); //use for quick access in gameplay
+    public List<MissionData> missionDatas = new List<MissionData>(); //use for storing, initializing
 
-    public List<string> CurrentMission = new List<string>();
     public static save instance = new save();
 
     public string[] GetFilesInSaveFolder()
@@ -37,7 +36,7 @@ public class save
             }
             else
             {
-                Debug.LogWarning("Save folder does not exist: " + saveFolder +", Creating");
+                Debug.LogWarning("Save folder does not exist: " + saveFolder + ", Creating");
                 //Create the folder
                 Directory.CreateDirectory(saveFolder);
                 return new string[0];
@@ -60,16 +59,23 @@ public class save
     /// <summary>
     /// Saves the current game state to a JSON file
     /// </summary>
+    private void InitializeMissions()
+    {
+        missionDatas = new List<MissionData>();
+        {
+            new MissionData("tutorial_1", "Once upon a time there were three little pigs", "Talk to the Priest, Blacksmith and Farmer");
+        };
+    }
     public void SaveToFile(string path)
     {
         try
         {
             // Serialize to JSON
             string json = JsonUtility.ToJson(this, true);
-            
+
             // Write to file
             File.WriteAllText(path, json);
-            
+
             Debug.Log("Game saved successfully to: " + path);
         }
         catch (Exception e)
@@ -83,13 +89,14 @@ public class save
         CurrentSaveName = saveName;
         ItemData = new List<ItemDataEntry>();
         CurrentStage = "intro";
+        InitializeMissions();
         SaveToFile(GetSavePath(saveName));
 
     }
     public void ParseDict()
     {
         ItemData = new List<ItemDataEntry>();
-        foreach(var pair in FindSavedItem)
+        foreach (var pair in FindSavedItem)
         {
             ItemDataEntry entry = new ItemDataEntry
             {
@@ -121,7 +128,7 @@ public class save
     /// <summary>
     /// Loads the game state from a JSON file
     /// </summary>
-    public bool LoadFromFile(string path) 
+    public bool LoadFromFile(string path)
     {
         Debug.Log("Loading from path " + path);
         //Print values in save:
@@ -132,18 +139,18 @@ public class save
             if (!File.Exists(path))
             {
                 Debug.LogWarning("Save file not found at: " + path);
-                
+
                 return false;
             }
 
             // Read from file
             string json = File.ReadAllText(path);
-            
+
             // Deserialize from JSON (overwrites current instance data)
             JsonUtility.FromJsonOverwrite(json, this);
             ParseList();
             PrintSaveContents(); // Print values after loading
-            
+
             Debug.Log("Game loaded successfully from: " + path);
             return true;
         }
@@ -268,19 +275,19 @@ public class NpcSaveData
 {
     public string NpcName;
     public List<string> Conversations = new List<string>();
-    
+
     // Constructor to create from npc MonoBehaviour
     public NpcSaveData(npc npc)
     {
         NpcName = npc.NpcName;
         Conversations = new List<string>(npc.Conversations);
     }
-    
+
     // Empty constructor for deserialization
     public NpcSaveData()
     {
     }
-    
+
     // Apply this data to an npc MonoBehaviour
     public void ApplyToNpc(npc npc)
     {
