@@ -5584,6 +5584,7 @@ MonoBehaviour:
   SelectedSaveName: 
   CurrentPlayingConversation: []
   ObjectiveDisplay: {fileID: 960907089}
+  subtitle: {fileID: 1917696}
   readingfragment: {fileID: 0}
 --- !u!114 &1361824423
 MonoBehaviour:
