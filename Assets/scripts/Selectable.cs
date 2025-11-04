@@ -32,7 +32,7 @@ public partial class Selectable : MonoBehaviour
         {
             outline.enabled = true;
             //if click this frame
-            if(Mouse.current.leftButton.wasPressedThisFrame)
+            if(Mouse.current.leftButton.wasPressedThisFrame && !gamecore.instance.InDialogue)
             {
                 OnClicked();
             }
