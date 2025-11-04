@@ -302,7 +302,6 @@ public class PacketHandles_Method
 
 			gamecore.instance.StartConversation(conversationid, gamecore.instance.CurrentStage.GetNPC[npcname], index, false);
 		}
-		gamecore.instance.StartConversation(conversationid,false);
 	}
 
 	public static void Client_Handle_nextdialogue(Connection c, packet packet)

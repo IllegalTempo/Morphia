@@ -4,7 +4,7 @@ public class Tutorial_SceneCore : SceneData
 {
     protected override void StartMethod()
     {
-        if(!save.instance.Missions["tutorial_1"].Completed && NetworkSystem.instance.IsServer)
+        if(NetworkSystem.instance.IsServer && !save.instance.Missions["tutorial_1"].Completed)
         {
             criteria.instance.Conversation_onFinish += tutorial_ambush_rev;
             MissionData missionData = save.instance.Missions["tutorial_1"];
