@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class Tutorial_SceneCore : SceneData
 {
-    private void Start()
+    protected override void StartMethod()
     {
-        if (!save.instance.Missions["tutorial_1"].Completed)
+        if(!save.instance.Missions["tutorial_1"].Completed)
         {
             criteria.instance.Conversation_onFinish += tutorial_ambush_rev;
             MissionData missionData = save.instance.Missions["tutorial_1"];
@@ -23,7 +23,7 @@ public class Tutorial_SceneCore : SceneData
         if (allTalked)
         {
 
-            gamecore.instance.StartConversation("ambush_revolutionaries");
+            gamecore.instance.StartConversation("ambush_revolutionaries",true);
         }
     }
 }

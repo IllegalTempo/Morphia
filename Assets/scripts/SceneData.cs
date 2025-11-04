@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO.Pipes;
+using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
 
 public class SceneData : MonoBehaviour
@@ -21,6 +22,10 @@ public class SceneData : MonoBehaviour
         gamecore.instance.CurrentStage = this;
 
     }
+    protected virtual void StartMethod()
+    {
+
+    }
     private void Start()
     {
         if (stage == "mainscreen")
@@ -31,6 +36,7 @@ public class SceneData : MonoBehaviour
         {
             GetNPC[npc.NpcName] = npc;
         }
+        StartMethod();
     }
 
 }

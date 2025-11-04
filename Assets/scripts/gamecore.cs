@@ -98,22 +98,28 @@ public class gamecore : MonoBehaviour
 
     }
     Conv_Ref CurrentConversation;
-    public void StartConversation(string conversationKey)
+    public void StartConversation(string conversationKey, bool send)
     {
-        if (NetworkSystem.instance.IsServer)
+        if(send)
         {
-            PacketSend.Server_Send_enterconversation(conversationKey);
+            if (NetworkSystem.instance.IsServer)
+            {
+                PacketSend.Server_Send_enterconversation(conversationKey);
 
-        } else
-        {
-            PacketSend.Client_Send_EnterConversation(conversationKey);
+            }
+            else
+            {
+                PacketSend.Client_Send_EnterConversation(conversationKey);
+            }
         }
-            CurrentPlayingConversation.AddRange(GetConversation[conversationKey].Dialogues);
+        
+        CurrentPlayingConversation.AddRange(GetConversation[conversationKey].Dialogues);
         gamecore.instance.PlayNextDialogue();
     }
+    
     public void StartConversation(string conversationKey,npc npc,int index) //with npc reference, normal this is triggered by talking to that npc
     {
-        StartConversation(conversationKey);
+        StartConversation(conversationKey,true);
         CurrentConversation = new Conv_Ref(npc,index);
     }
 
