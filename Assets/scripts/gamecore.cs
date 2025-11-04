@@ -86,6 +86,14 @@ public class gamecore : MonoBehaviour
         {
             if (CurrentPlayingConversation.Count > 0)
             {
+                if (NetworkSystem.instance.IsServer)
+                {
+                    PacketSend.Server_nextdialogue();
+                }
+                else
+                {
+                    PacketSend.Client_Send_nextdialogue();
+                }
                 PlayNextDialogue();
             }
             else
