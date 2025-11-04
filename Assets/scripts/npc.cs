@@ -13,7 +13,7 @@ public class npc :Selectable
     private void Start()
     {
         ItemNameTag tag = Instantiate(gamecore.instance.ItemNameTagPrefab, transform).GetComponent<ItemNameTag>();
-        tag.InitializeItemTag(NpcName, 3f);
+        tag.InitializeItemTag(NpcName);
 
     }
     protected void EnterConversation(int index)

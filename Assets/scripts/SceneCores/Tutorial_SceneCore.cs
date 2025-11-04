@@ -23,6 +23,7 @@ public class Tutorial_SceneCore : SceneData
 
 
     }
+
     public void FinishIntro()
     {
         gamecore.instance.FinishMission("intro");
@@ -39,8 +40,12 @@ public class Tutorial_SceneCore : SceneData
         {
             gamecore.instance.FinishMission("tutorial_1");
             criteria.instance.Conversation_onFinish -= tutorial_ambush_rev;
-
+            GameObject.Find("enemygroup").SetActive(true);
             gamecore.instance.StartConversation("ambush_revolutionaries",true);
         }
+    }
+    public void tutorial_ambush_rev_end()
+    {
+        gamecore.instance.FinishMission("tutorial_2");
     }
 }
