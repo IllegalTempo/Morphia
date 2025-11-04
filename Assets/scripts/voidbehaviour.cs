@@ -17,7 +17,7 @@ public class voidbehaviour : MonoBehaviour
         if (rb != null)
         {
             //teleport to spawnpoint
-            transform.position = gamecore.instance.CurrentStage.Spawnpoint[0].position;
+            collision.transform.position = gamecore.instance.CurrentStage.Spawnpoint[0].position;
         }
     }
 }
