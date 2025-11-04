@@ -96,10 +96,6 @@ public class gamecore : MonoBehaviour
                 }
                 PlayNextDialogue();
             }
-            else
-            {
-                EndDialogue();
-            }
         }
         
 
