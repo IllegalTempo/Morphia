@@ -76,6 +76,7 @@ public class gamecore : MonoBehaviour
     public List<dialogue> CurrentPlayingConversation;
     private Coroutine currentDialogueCameraCoroutine;
     public GameObject ObjectiveDisplay;
+    public TMP_Text subtitle;
 
 
     public bool IsLocal(int id)
@@ -409,6 +410,8 @@ public class gamecore : MonoBehaviour
         DialogueUI.SetActive(false);
         EF_UI.SetActive(false);
         ObjectiveDisplay.SetActive(false);
+        subtitle.text = "";
+
 
     }
 
@@ -416,6 +419,27 @@ public class gamecore : MonoBehaviour
     {
         SceneManager.sceneLoaded -= OnSceneLoad;
 
+#if UNITY_EDITOR
+        // In editor, save when stopping play mode
+        if (UnityEditor.EditorApplication.isPlaying)
+        {
+            SaveGameOnExit();
+        }
+#endif
+    }
+
+    private void OnApplicationQuit()
+    {
+        SaveGameOnExit();
+    }
+
+    private void SaveGameOnExit()
+    {
+        if (CurrentStage != null && !CurrentStage.IsLobby && NetworkSystem.instance != null && NetworkSystem.instance.IsServer)
+        {
+            Debug.Log("Auto-saving game before exit...");
+            ToSave();
+        }
     }
 
     /// <summary>

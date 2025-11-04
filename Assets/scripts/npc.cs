@@ -5,6 +5,7 @@ public class npc :Selectable
 {
     
     public string NpcName;
+    public int PlayConvID = 0;
     public List<string> Conversations = new List<string>();
     public override void OnClicked()
     {

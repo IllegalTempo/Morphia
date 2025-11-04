@@ -84,6 +84,9 @@ public class save
             new MissionData("intro", "Mission Start!", "Open the fragment In front"),
             new MissionData("tutorial_1", "Once upon a time there were three little pigs", "Talk to the Priest, Blacksmith and Farmer"),
             new MissionData("tutorial_2","Stolen","Find a way to reach where the enemy standed and retreive stolen materials"),
+            new MissionData("tutorial_3","Golden Core","Follow the path and retreive the core fragment"),
+            new MissionData("tutorial_4","Returning","Returning to the priest"),
+
 
         };
         ParseList();

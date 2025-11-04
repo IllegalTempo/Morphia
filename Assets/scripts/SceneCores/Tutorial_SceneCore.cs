@@ -1,3 +1,4 @@
+using UnityEditor.Build.Content;
 using UnityEngine;
 
 public class Tutorial_SceneCore : SceneData
@@ -59,6 +60,47 @@ public class Tutorial_SceneCore : SceneData
         EnemiesGroup.SetActive(false);
         MissionData missionData = save.instance.Missions["tutorial_2"];
         gamecore.instance.AddMission(missionData);
-        gamecore.instance.SetObjective(new Vector3(443,-127,680));
+        criteria.instance.EF_onFinish += FinishRetreive1;
     }
+    public void FinishRetreive1(string id)
+    {
+        if(id == "tutorial_2")
+        {
+            gamecore.instance.FinishMission("tutorial_2");
+
+            gamecore.instance.StartConversation("dialogue_6", true);
+            MissionData missionData = save.instance.Missions["tutorial_3"];
+            gamecore.instance.AddMission(missionData);
+            criteria.instance.EF_onFinish -= FinishRetreive1;
+            criteria.instance.EF_onFinish += tutorial_retreive_core_fragment;
+
+        }
+    }
+    public void tutorial_retreive_core_fragment(string id)
+    {
+        if(id == "tutorial_3")
+        {
+            MissionData missionData = save.instance.Missions["tutorial_4"];
+            gamecore.instance.AddMission(missionData);
+            gamecore.instance.FinishMission("tutorial_3");
+            criteria.instance.Conversation_onFinish += returnedPriest;
+            criteria.instance.EF_onFinish -= tutorial_retreive_core_fragment;
+            gamecore.instance.CurrentStage.GetNPC["priest"].PlayConvID = 1;
+        }
+        
+
+    }
+    public void returnedPriest(string convid)
+    {
+        //FUCKING COMPLETED TUTORIAL
+        if(convid == "returning_materials") 
+        {
+            gamecore.instance.FinishMission("tutorial_4");
+            criteria.instance.Conversation_onFinish -= returnedPriest;
+
+        }
+
+    }
+
+
 }

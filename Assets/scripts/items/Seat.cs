@@ -52,6 +52,8 @@ public class Seat : item
     private void SitDown(PlayerMovement player)
     {
         if (isOccupied || player == null) return;
+        gamecore.instance.subtitle.text = "Click E to Exit Seat";
+
 
         seatedPlayer = player;
         seatedPlayerRb = player.GetComponent<Rigidbody>();
@@ -79,7 +81,9 @@ public class Seat : item
 
     private void StandUp()
     {
+
         if (!isOccupied || seatedPlayer == null) return;
+        gamecore.instance.subtitle.text = "";
 
         // Restore player movement
         if (seatedPlayerRb != null)

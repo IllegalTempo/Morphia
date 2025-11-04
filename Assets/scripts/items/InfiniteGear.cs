@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class InfiniteGear : item
 {
-    private float forwardSpeed = 5f; // Speed at which the item moves forward
+    private float forwardSpeed = 10f; // Speed at which the item moves forward
     private Rigidbody stickingToRb;
 
     public override void StickEffect()

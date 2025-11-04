@@ -11,4 +11,9 @@ public class elsiumfragment : Selectable
         base.OnClicked();
         gamecore.instance.OnPickEF(this);
     }
+    private void Start()
+    {
+        ItemNameTag tag = Instantiate(gamecore.instance.ItemNameTagPrefab, transform).GetComponent<ItemNameTag>();
+        tag.InitializeItemTag("Click ME!");
+    }
 }
