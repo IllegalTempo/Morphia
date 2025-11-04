@@ -84,8 +84,6 @@ public class gamecore : MonoBehaviour
         // Handle dialogue progression with Enter key using new Input System
         if (InDialogue && Mouse.current.leftButton.wasPressedThisFrame)
         {
-            if (CurrentPlayingConversation.Count > 0)
-            {
                 if (NetworkSystem.instance.IsServer)
                 {
                     PacketSend.Server_nextdialogue();
@@ -95,7 +93,7 @@ public class gamecore : MonoBehaviour
                     PacketSend.Client_Send_nextdialogue();
                 }
                 PlayNextDialogue();
-            }
+            
         }
         
 
