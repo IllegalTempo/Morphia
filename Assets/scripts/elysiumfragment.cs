@@ -10,6 +10,5 @@ public class elsiumfragment : Selectable
     {
         base.OnClicked();
         gamecore.instance.OnPickEF(this);
-        Destroy(gameObject);
     }
 }
