@@ -18,10 +18,10 @@ public class Tutorial_SceneCore : SceneData
         npc npc1 = gamecore.instance.CurrentStage.GetNPC["priest"];
         var npc2 = gamecore.instance.CurrentStage.GetNPC["blacksmith"];
         var npc3 = gamecore.instance.CurrentStage.GetNPC["farmer"];
-        gamecore.instance.FinishMission("tutorial_1");
         bool allTalked = npc1.Conversations[0] == null && npc2.Conversations[0] == null && npc3.Conversations[0] == null;
         if (allTalked)
         {
+            gamecore.instance.FinishMission("tutorial_1");
 
             gamecore.instance.StartConversation("ambush_revolutionaries",true);
         }
