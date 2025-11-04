@@ -89,7 +89,7 @@ public class item : Selectable
         // Ignore collision between this item and the item it's sticking to
         if (itemCollider != null && other.itemCollider != null)
         {
-            Physics.IgnoreCollision(itemCollider, other.itemCollider, true);
+            //Physics.IgnoreCollision(itemCollider, other.itemCollider, true);
         }
 
         StickEffect();
@@ -103,7 +103,7 @@ public class item : Selectable
         // Re-enable collision between this item and the item it was sticking to
         if (StickingTo != null && itemCollider != null && StickingTo.itemCollider != null)
         {
-            Physics.IgnoreCollision(itemCollider, StickingTo.itemCollider, false);
+            //Physics.IgnoreCollision(itemCollider, StickingTo.itemCollider, false);
         }
 
         UnStickEffect(); // Call before setting StickingTo to null
@@ -129,7 +129,7 @@ public class item : Selectable
         // Get collider in itself or children and disable it
         if (itemCollider != null)
         {
-            itemCollider.enabled = false;
+            //itemCollider.enabled = false;
         }
         netObj.Owner = networkID;
         
@@ -150,7 +150,7 @@ public class item : Selectable
 
         this.transform.position = dropPosition;
 
-        itemCollider.enabled = true;
+        //itemCollider.enabled = true;
         netObj.Owner = -1;
         
     }
