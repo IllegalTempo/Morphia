@@ -8,7 +8,7 @@ public class criteria : MonoBehaviour
     public delegate void CriteriaEventHandler<T1, T2>(T1 arg1, T2 arg2);
 
     // Example event listeners
-    public event CriteriaEventHandler Conversation_onFinish;
+    public event CriteriaEventHandler<string> Conversation_onFinish;
     public event CriteriaEventHandler<string> EF_onFinish;
     public static criteria instance;
     private void Awake()
@@ -18,9 +18,9 @@ public class criteria : MonoBehaviour
 
     }
     // Method to invoke Conversation_onFinish event
-    public void TriggerConversationFinish()
+    public void TriggerConversationFinish(string conversationid)
     {
-        Conversation_onFinish?.Invoke();
+        Conversation_onFinish?.Invoke(conversationid);
     }
     public void TriggerEFFinish(string id)
     {

@@ -17,7 +17,7 @@ public class voidbehaviour : MonoBehaviour
         if (rb != null)
         {
             // Calculate bounce direction based on collision normal
-            Vector3 bounceDirection = collision.contacts[0].normal;
+            Vector3 bounceDirection = Vector3.up;
             
             // Calculate force magnitude based on relative velocity
             float velocityMagnitude = collision.relativeVelocity.magnitude;

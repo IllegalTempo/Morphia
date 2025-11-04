@@ -75,11 +75,17 @@ public class gamecore : MonoBehaviour
     public Dictionary<string, conversation> GetConversation = new Dictionary<string, conversation>();
     public List<dialogue> CurrentPlayingConversation;
     private Coroutine currentDialogueCameraCoroutine;
+    public GameObject ObjectiveDisplay;
 
 
     public bool IsLocal(int id)
     {
         return LocalPlayer != null && LocalPlayer.NetworkID == id;
+    }
+    public void SetObjective(Vector3 dest)
+    {
+        ObjectiveDisplay.SetActive(true);
+        ObjectiveDisplay.transform.position = dest;
     }
 
     private void Update()
@@ -108,6 +114,7 @@ public class gamecore : MonoBehaviour
 
     }
     Conv_Ref CurrentConversation;
+    string Currentconversationkey = "";
     public void StartConversation(string conversationKey, npc npc, int index, bool send)
     {
 
@@ -129,6 +136,7 @@ public class gamecore : MonoBehaviour
         CurrentPlayingConversation.AddRange(GetConversation[conversationKey].Dialogues);
         gamecore.instance.PlayNextDialogue();
         InDialogue = true;
+        Currentconversationkey = conversationKey;
 
     }
     public void StartConversation(string conversationKey, bool send)
@@ -147,6 +155,7 @@ public class gamecore : MonoBehaviour
         CurrentPlayingConversation.AddRange(GetConversation[conversationKey].Dialogues);
         gamecore.instance.PlayNextDialogue();
         InDialogue = true;
+        Currentconversationkey = conversationKey;
 
     }
     public elsiumfragment readingfragment;
@@ -186,7 +195,7 @@ public class gamecore : MonoBehaviour
         dialogue dialogue = CurrentPlayingConversation[0];
         string[] ignorelist = { "Gameplay", "narrator" };
         // Find the character GameObject by name
-        GameObject character = GameObject.Find(dialogue.CharacterName);
+        GameObject character = GameObject.Find(dialogue.CharacterName.ToLower());
 
         if (character == null)
         {
@@ -309,8 +318,8 @@ public class gamecore : MonoBehaviour
             CurrentConversation = null;
             Debug.Log("MK_GC_268");
         }
-        criteria.instance.TriggerConversationFinish();
-
+        criteria.instance.TriggerConversationFinish(Currentconversationkey);
+        Currentconversationkey = "";
         Debug.Log("Conversation ended");
     }
 
@@ -399,6 +408,7 @@ public class gamecore : MonoBehaviour
         LoadingScreen.SetActive(false);
         DialogueUI.SetActive(false);
         EF_UI.SetActive(false);
+        ObjectiveDisplay.SetActive(false);
 
     }
 

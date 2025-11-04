@@ -38,7 +38,7 @@ public class Tutorial_SceneCore : SceneData
 
 
     }
-    public void tutorial_ambush_rev()
+    public void tutorial_ambush_rev(string conversationid)
     {
         npc npc1 = gamecore.instance.CurrentStage.GetNPC["priest"];
         var npc2 = gamecore.instance.CurrentStage.GetNPC["blacksmith"];
@@ -49,11 +49,16 @@ public class Tutorial_SceneCore : SceneData
             gamecore.instance.FinishMission("tutorial_1");
             criteria.instance.Conversation_onFinish -= tutorial_ambush_rev;
             EnemiesGroup.SetActive(true);
-            gamecore.instance.StartConversation("ambush_revolutionaries",true);
+            gamecore.instance.StartConversation("revolutionary_unit", true);
+            criteria.instance.Conversation_onFinish += tutorial_retreive_stolen_items;
+
         }
     }
-    public void tutorial_ambush_rev_end()
+    public void tutorial_retreive_stolen_items(string conversationid)
     {
-        gamecore.instance.FinishMission("tutorial_2");
+        EnemiesGroup.SetActive(false);
+        MissionData missionData = save.instance.Missions["tutorial_2"];
+        gamecore.instance.AddMission(missionData);
+        gamecore.instance.SetObjective(new Vector3(443,-127,680));
     }
 }
