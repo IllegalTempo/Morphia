@@ -52,7 +52,7 @@ public class item : Selectable
             }
             else
             {
-                PacketSend.Client_Send_PickUpItem(netObj.Identifier, -1);
+                PacketSend.Client_Send_drop(netObj.Identifier);
             }
         }
         else
