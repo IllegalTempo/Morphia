@@ -8,19 +8,17 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: elysiummater
-  m_Shader: {fileID: -6465566751694194690, guid: 5bc92f4810a657643a4edb6cfd1a9764, type: 3}
+  m_Shader: {fileID: 4800000, guid: 933532a4fcc9baf4fa0491de14d08ed7, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords:
-  - MAIN_LIGHT_CALCULATE_SHADOWS
-  - _MAIN_LIGHT_SHADOWS_CASCADE
-  - _SHADOWS_SOFT
+  m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
-  stringTagMap: {}
+  stringTagMap:
+    RenderType: Opaque
   disabledShaderPasses:
   - MOTIONVECTORS
   m_LockedProperties: 
@@ -127,7 +125,7 @@ Material:
     - _RimLightArea: 0.18
     - _RimLightStrength: 0.46
     - _SHADOWS_SOFT: 1
-    - _Smoothness: 0.146
+    - _Smoothness: 0.777
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
@@ -142,9 +140,9 @@ Material:
     - _litthreshold: 0
     - _softness: 0
     m_Colors:
-    - _BaseColor: {r: 0.84994656, g: 0.9433962, b: 0.92844427, a: 1}
-    - _Color: {r: 0.9009434, g: 1, b: 0.9828921, a: 1}
-    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EmissionColor: {r: 0.7729667, g: 0.8409554, b: 0.8579526, a: 1}
     - _Offset: {r: 0, g: 0, b: 0, a: 0}
     - _RimColor: {r: 0.8349056, g: 0.93782455, b: 1, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}

@@ -159,6 +159,7 @@ public class gamecore : MonoBehaviour
     }
     public void FinishEF()
     {
+        Debug.Log("Finish EF");
         EF_UI.SetActive(false);
 
         criteria.instance.TriggerEFFinish(readingfragment.id);
