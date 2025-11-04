@@ -276,6 +276,12 @@ public class PacketHandles_Method
 		string conversationid = packet.ReadstringUNICODE();
 		gamecore.instance.StartConversation(conversationid);
 	}
+
+	public static void Server_Handle_EnterConversation(NetworkPlayer p, packet packet)
+	{
+		string conversationid = packet.ReadstringUNICODE();
+		gamecore.instance.StartConversation(conversationid);
+	}
 }
 
 

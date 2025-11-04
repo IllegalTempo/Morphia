@@ -56,16 +56,6 @@ public class save
     {
         return Path.GetFileNameWithoutExtension(path);
     }
-    /// <summary>
-    /// Saves the current game state to a JSON file
-    /// </summary>
-    private void InitializeMissions()
-    {
-        missionDatas = new List<MissionData>();
-        {
-            new MissionData("tutorial_1", "Once upon a time there were three little pigs", "Talk to the Priest, Blacksmith and Farmer");
-        };
-    }
     public void SaveToFile(string path)
     {
         try
@@ -89,7 +79,11 @@ public class save
         CurrentSaveName = saveName;
         ItemData = new List<ItemDataEntry>();
         CurrentStage = "intro";
-        InitializeMissions();
+        missionDatas = new List<MissionData>
+        {
+            new MissionData("tutorial_1", "Once upon a time there were three little pigs", "Talk to the Priest, Blacksmith and Farmer")
+        };
+        ParseList();
         SaveToFile(GetSavePath(saveName));
 
     }

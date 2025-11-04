@@ -39,7 +39,8 @@ public class GameClient : ConnectionManager
             { (int)PacketSend.ServerPackets.DistributeNewMission, PacketHandles_Method.Client_Handle_DistributeNewMission }
         ,
             { (int)PacketSend.ServerPackets.enterconversation, PacketHandles_Method.Client_Handle_enterconversation }
-        };
+        
+            };
 
 
     public bool IsLocal(int id)

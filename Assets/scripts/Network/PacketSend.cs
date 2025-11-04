@@ -251,6 +251,8 @@ public class PacketSend
         stickItem = 6
     ,
         drop = 7
+    ,
+        EnterConversation = 8
     };
     public static Result Client_Send_AnimationState(float movementx,float movementy)
     {
@@ -346,6 +348,18 @@ public class PacketSend
         using (packet p = new packet((int)ClientPackets.drop))
         {
             p.WriteUNICODE(objectID);
+            return SendToServer(p);
+        }
+    }
+
+    
+    public static Result Client_Send_EnterConversation(string ConversationID)
+    {
+        using (packet p = new packet((int)ClientPackets.EnterConversation))
+        {
+            p.WriteUNICODE(ConversationID);
+
+
             return SendToServer(p);
         }
     }
