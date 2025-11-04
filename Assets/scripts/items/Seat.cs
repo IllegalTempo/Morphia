@@ -37,7 +37,7 @@ public class Seat : item
                 
                 // Check distance to player
                 float distance = Vector3.Distance(transform.position, localPlayerMovement.transform.position);
-                if (distance < 3f) // Within 3 units to sit
+                if (distance < 8f) // Within 3 units to sit
                 {
                     SitDown(localPlayerMovement);
                 }
