@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class Tutorial_SceneCore : SceneData
 {
+    [SerializeField]
+    private GameObject EnemiesGroup;
     protected override void StartMethod()
     {
         if (!NetworkSystem.instance.IsServer) return;
@@ -15,19 +17,25 @@ public class Tutorial_SceneCore : SceneData
         {
             MissionData missionData = save.instance.Missions["intro"];
             gamecore.instance.AddMission(missionData);
-            gamecore.instance.StartConversation("intro", true);
-            criteria.instance.Conversation_onFinish += FinishIntro;
+            criteria.instance.EF_onFinish += FinishIntro;
 
         }
+        EnemiesGroup.SetActive(false);
 
 
 
     }
 
-    public void FinishIntro()
+    public void FinishIntro(string id)
     {
-        gamecore.instance.FinishMission("intro");
-        criteria.instance.Conversation_onFinish -= FinishIntro;
+        if(id == "tutorial_1")
+        {
+
+            gamecore.instance.FinishMission("intro");
+            criteria.instance.EF_onFinish -= FinishIntro;
+            gamecore.instance.StartConversation("intro", true);
+        }
+
 
     }
     public void tutorial_ambush_rev()
@@ -40,7 +48,7 @@ public class Tutorial_SceneCore : SceneData
         {
             gamecore.instance.FinishMission("tutorial_1");
             criteria.instance.Conversation_onFinish -= tutorial_ambush_rev;
-            GameObject.Find("enemygroup").SetActive(true);
+            EnemiesGroup.SetActive(true);
             gamecore.instance.StartConversation("ambush_revolutionaries",true);
         }
     }

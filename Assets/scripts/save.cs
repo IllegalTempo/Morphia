@@ -81,7 +81,7 @@ public class save
         CurrentStage = "intro";
         missionDatas = new List<MissionData>
         {
-            new MissionData("intro", "Welcome to the Game!", ""),
+            new MissionData("intro", "Mission Start!", "Open the fragment In front"),
             new MissionData("tutorial_1", "Once upon a time there were three little pigs", "Talk to the Priest, Blacksmith and Farmer"),
             new MissionData("tutorial_2","Stolen","Find a way to reach the top of the cathedral")
         };

@@ -52,6 +52,9 @@ public class gamecore : MonoBehaviour
     public GameObject DialogueUI;
     public TMP_Text DialogueCharacterName;
     public TMP_Text DialogueText;
+    [Header("UI/ELYSIUM FRAGMENT")]
+    public GameObject EF_UI;
+    public TMP_Text EF_CONTENT;
     [Header("Dialogue Camera Settings")]
     public float dialogueCameraDistance = 3f; // Distance from character
     public float dialogueCameraHeight = 1.5f; // Height offset from character position
@@ -93,6 +96,10 @@ public class gamecore : MonoBehaviour
                 PacketSend.Client_Send_nextdialogue();
             }
             PlayNextDialogue();
+
+        }
+        if(readingfragment != null && Mouse.current.leftButton.wasPressedThisFrame)
+        {
 
         }
 
@@ -141,8 +148,23 @@ public class gamecore : MonoBehaviour
         InDialogue = true;
 
     }
+    public elsiumfragment readingfragment;
+    public void OnPickEF(elsiumfragment fragment)
+    {
+        EF_UI.SetActive(true);
+        EF_CONTENT.text = fragment.Content;
+        readingfragment = fragment;
 
+    }
+    public void FinishEF()
+    {
+        EF_UI.SetActive(false);
 
+        criteria.instance.TriggerEFFinish(readingfragment.id);
+        Destroy(readingfragment.gameObject);
+        readingfragment = null;
+
+    }
     public void StartGame(string savename)
     {
         MainScreenUI.instance.animator.Play("mainmenu_prestart");
@@ -374,6 +396,8 @@ public class gamecore : MonoBehaviour
     {
         LoadingScreen.SetActive(false);
         DialogueUI.SetActive(false);
+        EF_UI.SetActive(false);
+
     }
 
     private void OnDestroy()

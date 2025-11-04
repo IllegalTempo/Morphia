@@ -13,7 +13,10 @@ public partial class Selectable : MonoBehaviour
     private InputAction clickAction;
 
 
-
+    private void Awake()
+    {
+        gameObject.layer = 6;
+    }
     protected virtual void Update()
     {
         if (ClickTimer > 0)
