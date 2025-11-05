@@ -50,5 +50,6 @@ public partial class Selectable : MonoBehaviour
     public virtual void OnClicked()
     {
         ClickTimer = 0.2f;
+        gamecore.instance.ClickSound.Play();
     }
 }

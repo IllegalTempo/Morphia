@@ -14,9 +14,10 @@ public class save
     public Dictionary<string, NpcSaveData> FindNPC = new Dictionary<string, NpcSaveData>();
     public string CurrentStage = "";
     public string CurrentSaveName = "";
-
+    public string CurrentMission = "";
     public Dictionary<string, MissionData> Missions = new Dictionary<string, MissionData>(); //use for quick access in gameplay
     public List<MissionData> missionDatas = new List<MissionData>(); //use for storing, initializing
+    public CriteriaSaveData criteriaData = new CriteriaSaveData(); // Store criteria data
 
     public static save instance = new save();
 
@@ -79,6 +80,7 @@ public class save
         CurrentSaveName = saveName;
         ItemData = new List<ItemDataEntry>();
         CurrentStage = "intro";
+        criteriaData = new CriteriaSaveData(); // Initialize criteria data
         missionDatas = new List<MissionData>
         {
             new MissionData("intro", "Mission Start!", "Open the fragment In front"),
@@ -108,7 +110,11 @@ public class save
         npcs = new List<NpcSaveData>(FindNPC.Values);
         missionDatas = new List<MissionData>(Missions.Values);
 
-
+        // Save criteria data if criteria instance exists
+        if (criteria.instance != null)
+        {
+            criteriaData = criteria.instance.GetSaveData();
+        }
     }
     private void ParseList()
     {
@@ -124,6 +130,14 @@ public class save
         {
             Missions[mission.MissionID] = mission;
         }
+        
+        // Load criteria data if criteria instance exists
+        if (criteria.instance != null && criteriaData != null)
+        {
+            criteria.instance.LoadSaveData(criteriaData);
+        }
+        MissionData missionData = save.instance.Missions[CurrentMission];
+        gamecore.instance.AddMission(missionData);
     }
     /// <summary>
     /// Loads the game state from a JSON file
@@ -182,6 +196,7 @@ public class save
                 }
             }
         }
+        Debug.Log($"Criteria - Completed Conversations: {criteriaData?.completedConversations?.Count ?? 0}, Completed EFs: {criteriaData?.completedEFs?.Count ?? 0}");
     }
 
     /// <summary>

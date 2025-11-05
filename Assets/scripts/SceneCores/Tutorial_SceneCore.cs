@@ -97,7 +97,9 @@ public class Tutorial_SceneCore : SceneData
         if(convid == "returning_materials") 
         {
             gamecore.instance.FinishMission("tutorial_4");
+
             criteria.instance.Conversation_onFinish -= returnedPriest;
+
 
         }
 

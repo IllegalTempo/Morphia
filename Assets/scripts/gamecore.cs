@@ -78,7 +78,8 @@ public class gamecore : MonoBehaviour
     public GameObject ObjectiveDisplay;
     public TMP_Text subtitle;
 
-
+    public AudioSource ClickSound;
+    public AudioSource Sound_OnStick;
     public bool IsLocal(int id)
     {
         return LocalPlayer != null && LocalPlayer.NetworkID == id;
@@ -495,6 +496,7 @@ public class gamecore : MonoBehaviour
     private Dictionary<string, SingleMissionControll> InUIMission = new Dictionary<string, SingleMissionControll>();
     public void AddMission(string MissionID, string MissionTitle, string MissionDescription)
     {
+        save.instance.CurrentMission = MissionID;
         if (NetworkSystem.instance.IsServer)
         {
             PacketSend.Server_Send_Distribute_Mission(MissionID, MissionTitle, MissionDescription, true);

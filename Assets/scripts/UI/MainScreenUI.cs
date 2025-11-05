@@ -25,7 +25,7 @@ public class MainScreenUI : MonoBehaviour
     public GameObject AfterJoin_Canvas;
     public TMP_InputField InviteCodeInput;
 
-
+    public AudioSource ButtonClick;
 
 
 
@@ -46,7 +46,9 @@ public class MainScreenUI : MonoBehaviour
     public void CopyInviteCode()
     {
         GUIUtility.systemCopyBuffer = NetworkSystem.instance.GetInviteCode().ToString();
+        ButtonClick.Play();
         StatusDisplay.text = "Invite Code Copied to Clipboard!" ;
+
     }
     public void InviteFriend()
     {
@@ -54,6 +56,8 @@ public class MainScreenUI : MonoBehaviour
     }
     public void OnClickJoinLobby()
     {
+        ButtonClick.Play();
+
         string input = InviteCodeInput.text;
         if (ulong.TryParse(input, out ulong lobbyid))
         {
@@ -67,6 +71,8 @@ public class MainScreenUI : MonoBehaviour
     }
     public void OnSecondPlayerJoining(ConnectionInfo info)
     {
+        ButtonClick.Play();
+
         StatusDisplay.text = new Friend(info.Identity.SteamId).Name + " Is Joining!";
     }
     public void Initialize_AfterHost_UI()
@@ -114,6 +120,8 @@ public class MainScreenUI : MonoBehaviour
 
     public void OnSaveButtonClicked(string savename, Vector2 SaveButtonAnchoredPos)
     {
+        ButtonClick.Play();
+
         SelectedSaveIndicator.SetActive(true);
         gamecore.instance.SelectedSaveName = save.instance.GetSavePath(savename);
         SelectedSavePos = SaveButtonAnchoredPos + SaveButtonPosOffset;
@@ -121,6 +129,8 @@ public class MainScreenUI : MonoBehaviour
 
     public void OnNewSaveButtonClicked(Vector2 SaveButtonAnchoredPos)
     {
+        ButtonClick.Play();
+
         SelectedSaveIndicator.SetActive(true);
         string savename = "Save - " + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
         save.instance.NewSave(savename);
