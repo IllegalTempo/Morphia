@@ -9,7 +9,16 @@ public class elsiumfragment : Selectable
     public override void OnClicked()
     {
         base.OnClicked();
-        gamecore.instance.OnPickEF(this);
+        if(NetworkSystem.instance.IsServer)
+        {
+            PacketSend.Server_Send_readFragment(id, false);
+
+        } else
+        {
+            PacketSend.Client_Send_sendReadFragment(id,false);
+
+        }
+            gamecore.instance.OnPickEF(id);
     }
     private void Start()
     {

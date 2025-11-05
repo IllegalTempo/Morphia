@@ -105,8 +105,16 @@ public class gamecore : MonoBehaviour
             PlayNextDialogue();
 
         }
-        if(readingfragment != null && Mouse.current.leftButton.wasPressedThisFrame)
+        if (readingfragment != null && Mouse.current.leftButton.wasPressedThisFrame)
         {
+            if (NetworkSystem.instance.IsServer)
+            {
+                PacketSend.Server_Send_readFragment(readingfragment.id, true);
+            }
+            else
+            {
+                PacketSend.Client_Send_sendReadFragment(readingfragment.id, true);
+            }
             FinishEF();
 
         }
@@ -160,9 +168,10 @@ public class gamecore : MonoBehaviour
 
     }
     public elsiumfragment readingfragment;
-    public void OnPickEF(elsiumfragment fragment)
+    public void OnPickEF(string id)
     {
         EF_UI.SetActive(true);
+        elsiumfragment fragment = FindObjectsByType<elsiumfragment>(FindObjectsSortMode.None).ToList().Find(x => x.id == id);
         EF_CONTENT.text = fragment.Content;
         readingfragment = fragment;
 
@@ -216,7 +225,8 @@ public class gamecore : MonoBehaviour
         {
             DialogueCharacterName.text = dialogue.CharacterName.Split("/")[1];
 
-        } else
+        }
+        else
         {
             DialogueCharacterName.text = dialogue.CharacterName;
         }

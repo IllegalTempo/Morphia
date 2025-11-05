@@ -6,54 +6,32 @@ public class Seat : item
     [Header("Seat Settings")]
     public Vector3 sitPositionOffset = new Vector3(0, 0.5f, 0); // Offset from seat center where player sits
     public Vector3 sitRotationEuler = new Vector3(0, 0, 0); // Rotation when sitting
+    public float interactionDistance = 8f; // Distance to interact with seat
     
     private PlayerMovement seatedPlayer;
     private Rigidbody seatedPlayerRb;
     private Vector3 originalPosition;
     private RigidbodyConstraints originalConstraints;
     private bool isOccupied = false;
+    private bool wasInRange = false; // Track if player was in range last frame
 
     public override void OnClicked()
     {
-        // If seat is occupied, don't allow pickup or sitting
+        // If seat is occupied, don't allow pickup
         if (isOccupied)
         {
-            Debug.Log("Seat is occupied!");
+            Debug.Log("Seat is occupied! Cannot pick up.");
             return;
         }
 
-        // Check if item is in inventory
-        if (netObj.Owner != -1)
-        {
-            // Normal item pickup/drop behavior
-            base.OnClicked();
-        }
-        else
-        {
-            // Item is on ground - check if local player wants to sit
-            if (gamecore.instance.LocalPlayer != null)
-            {
-                PlayerMovement localPlayerMovement = gamecore.instance.LocalPlayer.playerMovement;
-                
-                // Check distance to player
-                float distance = Vector3.Distance(transform.position, localPlayerMovement.transform.position);
-                if (distance < 8f) // Within 3 units to sit
-                {
-                    SitDown(localPlayerMovement);
-                }
-                else
-                {
-                    Debug.Log("Too far from seat!");
-                }
-            }
-        }
+        // Left click always picks up/drops the item
+        base.OnClicked();
     }
 
     private void SitDown(PlayerMovement player)
     {
         if (isOccupied || player == null) return;
-        gamecore.instance.subtitle.text = "Click E to Exit Seat";
-
+        gamecore.instance.subtitle.text = "Press E to Exit Seat";
 
         seatedPlayer = player;
         seatedPlayerRb = player.GetComponent<Rigidbody>();
@@ -81,7 +59,6 @@ public class Seat : item
 
     private void StandUp()
     {
-
         if (!isOccupied || seatedPlayer == null) return;
         gamecore.instance.subtitle.text = "";
 
@@ -125,6 +102,34 @@ public class Seat : item
                 StandUp();
             }
         }
+        else if (!isOccupied && netObj.Owner == -1) // Seat is on ground and not occupied
+        {
+            // Check distance to player for subtitle
+            if (gamecore.instance.LocalPlayer != null)
+            {
+                PlayerMovement localPlayerMovement = gamecore.instance.LocalPlayer.playerMovement;
+                float distance = Vector3.Distance(transform.position, localPlayerMovement.transform.position);
+                bool inRange = distance < interactionDistance;
+
+                // Update subtitle when entering or leaving range
+                if (inRange && !wasInRange)
+                {
+                    gamecore.instance.subtitle.text = "Press E to sit";
+                }
+                else if (!inRange && wasInRange)
+                {
+                    gamecore.instance.subtitle.text = "";
+                }
+
+                wasInRange = inRange;
+
+                // Check if local player wants to sit down by pressing E
+                if (inRange && Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
+                {
+                    SitDown(localPlayerMovement);
+                }
+            }
+        }
 
         // If seated player is destroyed or null, clean up
         if (isOccupied && seatedPlayer == null)
@@ -152,6 +157,12 @@ public class Seat : item
         {
             StandUp();
         }
+
+        // Clear subtitle if this seat was showing it
+        if (wasInRange && gamecore.instance != null && gamecore.instance.subtitle != null)
+        {
+            gamecore.instance.subtitle.text = "";
+        }
     }
 
     // Optional: Visualize the sit position in editor
@@ -167,6 +178,6 @@ public class Seat : item
         
         // Draw interaction range
         Gizmos.color = new Color(0, 1, 0, 0.2f);
-        Gizmos.DrawWireSphere(transform.position, 3f);
+        Gizmos.DrawWireSphere(transform.position, interactionDistance);
     }
 }

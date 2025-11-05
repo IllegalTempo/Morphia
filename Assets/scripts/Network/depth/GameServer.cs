@@ -40,6 +40,8 @@ public class GameServer : SocketManager
             { (int)PacketSend.ClientPackets.EnterConversation, PacketHandles_Method.Server_Handle_EnterConversation }
         ,
             { (int)PacketSend.ClientPackets.nextdialogue, PacketHandles_Method.Server_Handle_nextdialogue }
+        ,
+            { (int)PacketSend.ClientPackets.sendReadFragment, PacketHandles_Method.Server_Handle_sendReadFragment }
         };
 
 

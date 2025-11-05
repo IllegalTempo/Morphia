@@ -61,6 +61,7 @@ public class Tutorial_SceneCore : SceneData
         MissionData missionData = save.instance.Missions["tutorial_2"];
         gamecore.instance.AddMission(missionData);
         criteria.instance.EF_onFinish += FinishRetreive1;
+        criteria.instance.Conversation_onFinish -= tutorial_retreive_stolen_items;
     }
     public void FinishRetreive1(string id)
     {

@@ -43,7 +43,9 @@ public class GameClient : ConnectionManager
             ,
             { (int)PacketSend.ServerPackets.nextdialogue, PacketHandles_Method.Client_Handle_nextdialogue }
         
-            };
+            ,
+            { (int)PacketSend.ServerPackets.readfragment, PacketHandles_Method.Client_Handle_readfragment }
+        };
 
 
     public bool IsLocal(int id)

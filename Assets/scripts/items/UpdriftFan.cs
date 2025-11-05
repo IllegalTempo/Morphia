@@ -42,6 +42,6 @@ public class UpdriftFan : item
             stickingToRb.linearVelocity = Vector3.up * upwardSpeed;
         }
         //keep spining
-        transform.Rotate(Vector3.up, 90f * Time.deltaTime, Space.World);
+        transform.Rotate(Vector3.up, 360f * Time.deltaTime, Space.World);
     }
 }

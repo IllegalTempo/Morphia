@@ -313,6 +313,36 @@ public class PacketHandles_Method
 	{
 		gamecore.instance.PlayNextDialogue();
 	}
+
+	public static void Client_Handle_readfragment(Connection c, packet packet)
+	{
+		string id = packet.ReadstringUNICODE();
+		bool done = packet.Readbool();
+		if (done)
+		{
+			gamecore.instance.FinishEF();
+
+		} else
+		{
+			gamecore.instance.OnPickEF(id);
+		}
+	}
+
+	public static void Server_Handle_sendReadFragment(NetworkPlayer p, packet packet)
+	{
+		string id = packet.ReadstringUNICODE();
+		bool done = packet.Readbool();
+		if (done)
+		{
+			gamecore.instance.FinishEF();
+
+		}
+		else
+		{
+			gamecore.instance.OnPickEF(id);
+		}
+
+	}
 }
 
 
