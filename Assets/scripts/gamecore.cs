@@ -518,7 +518,10 @@ public class gamecore : MonoBehaviour
 
 
         }
-
+        if(MissionID == "tutorial_4")
+        {
+            LoadScene("end");
+        }
         InUIMission[MissionID].CompleteMission();
 
     }
