@@ -79,7 +79,6 @@ public class gamecore : MonoBehaviour
     public TMP_Text subtitle;
 
     public AudioSource ClickSound;
-    public AudioSource Sound_OnStick;
     public bool IsLocal(int id)
     {
         return LocalPlayer != null && LocalPlayer.NetworkID == id;

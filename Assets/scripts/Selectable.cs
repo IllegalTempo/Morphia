@@ -9,13 +9,16 @@ public partial class Selectable : MonoBehaviour
     public StaticOutline outline;
     public bool LookedAt = false;
     public float ClickTimer = 0f;
-    
     private InputAction clickAction;
-
+    private AudioSource audioSource;
 
     private void Awake()
     {
         gameObject.layer = 6;
+        audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.clip = gamecore.instance.ClickSound.clip;
+        audioSource.volume = gamecore.instance.ClickSound.volume;
+
     }
     protected virtual void Update()
     {
@@ -50,6 +53,7 @@ public partial class Selectable : MonoBehaviour
     public virtual void OnClicked()
     {
         ClickTimer = 0.2f;
-        gamecore.instance.ClickSound.Play();
+        audioSource.Play();
+
     }
 }

@@ -91,7 +91,6 @@ public class item : Selectable
         {
             //Physics.IgnoreCollision(itemCollider, other.itemCollider, true);
         }
-        gamecore.instance.Sound_OnStick.Play();
         StickEffect();
     }
     public void UnStick()

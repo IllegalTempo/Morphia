@@ -136,8 +136,12 @@ public class save
         {
             criteria.instance.LoadSaveData(criteriaData);
         }
-        MissionData missionData = save.instance.Missions[CurrentMission];
-        gamecore.instance.AddMission(missionData);
+        if(CurrentMission != "")
+        {
+            MissionData missionData = save.instance.Missions[CurrentMission];
+            gamecore.instance.AddMission(missionData);
+        }
+        
     }
     /// <summary>
     /// Loads the game state from a JSON file

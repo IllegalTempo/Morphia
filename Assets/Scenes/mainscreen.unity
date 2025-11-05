@@ -3250,7 +3250,6 @@ MonoBehaviour:
   SaveButtonPosOffset: {x: 0, y: 0.5}
   AfterJoin_Canvas: {fileID: 2144188322}
   InviteCodeInput: {fileID: 481489306}
-  ButtonClick: {fileID: 0}
 --- !u!95 &743141231
 Animator:
   serializedVersion: 7
@@ -5589,8 +5588,7 @@ MonoBehaviour:
   CurrentPlayingConversation: []
   ObjectiveDisplay: {fileID: 960907089}
   subtitle: {fileID: 1917696}
-  ClickSound: {fileID: 0}
-  Sound_OnStick: {fileID: 0}
+  ClickSound: {fileID: 8300000, guid: 41a2230499159c44da89f14e3ca44d1f, type: 3}
   readingfragment: {fileID: 0}
 --- !u!114 &1361824423
 MonoBehaviour:

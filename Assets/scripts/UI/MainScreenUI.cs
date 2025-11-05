@@ -25,7 +25,6 @@ public class MainScreenUI : MonoBehaviour
     public GameObject AfterJoin_Canvas;
     public TMP_InputField InviteCodeInput;
 
-    public AudioSource ButtonClick;
 
 
 
@@ -46,7 +45,7 @@ public class MainScreenUI : MonoBehaviour
     public void CopyInviteCode()
     {
         GUIUtility.systemCopyBuffer = NetworkSystem.instance.GetInviteCode().ToString();
-        ButtonClick.Play();
+        gamecore.instance.ClickSound.Play();
         StatusDisplay.text = "Invite Code Copied to Clipboard!" ;
 
     }
@@ -56,7 +55,7 @@ public class MainScreenUI : MonoBehaviour
     }
     public void OnClickJoinLobby()
     {
-        ButtonClick.Play();
+        gamecore.instance.ClickSound.Play();
 
         string input = InviteCodeInput.text;
         if (ulong.TryParse(input, out ulong lobbyid))
@@ -71,12 +70,14 @@ public class MainScreenUI : MonoBehaviour
     }
     public void OnSecondPlayerJoining(ConnectionInfo info)
     {
-        ButtonClick.Play();
+        gamecore.instance.ClickSound.Play();
 
         StatusDisplay.text = new Friend(info.Identity.SteamId).Name + " Is Joining!";
     }
     public void Initialize_AfterHost_UI()
     {
+        gamecore.instance.ClickSound.Play();
+
         animator.Play("mainmenu_AfterHost");
         NetworkSystem.instance.CreateGameLobby();
         AfterHost_Canvas.SetActive(true);
@@ -102,6 +103,8 @@ public class MainScreenUI : MonoBehaviour
     }
     public void Initialize_AfterJoin_UI()
     {
+        gamecore.instance.ClickSound.Play();
+
         animator.Play("mainmenu_AfterJoin");
         AfterJoin_Canvas.SetActive(true);
     }
@@ -120,7 +123,7 @@ public class MainScreenUI : MonoBehaviour
 
     public void OnSaveButtonClicked(string savename, Vector2 SaveButtonAnchoredPos)
     {
-        ButtonClick.Play();
+        gamecore.instance.ClickSound.Play();
 
         SelectedSaveIndicator.SetActive(true);
         gamecore.instance.SelectedSaveName = save.instance.GetSavePath(savename);
@@ -129,7 +132,7 @@ public class MainScreenUI : MonoBehaviour
 
     public void OnNewSaveButtonClicked(Vector2 SaveButtonAnchoredPos)
     {
-        ButtonClick.Play();
+        gamecore.instance.ClickSound.Play();
 
         SelectedSaveIndicator.SetActive(true);
         string savename = "Save - " + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
